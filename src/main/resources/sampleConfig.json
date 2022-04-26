@@ -1,0 +1,41 @@
+{
+  "modulePath": "B:\\Trash\\moduleScannerInput",
+  "modules":
+  [
+    {
+      "name": "client.dll",
+      "patterns": [
+        {
+          "name": "CHLClient::CreateMove",
+          "actions": [
+            {
+              "type": "PatternSearch",
+              "arguments": ["55 8B EC"]
+            },
+            {
+              "type": "Offset",
+              "arguments": ["10"]
+            }
+          ]
+        },
+        {
+          "name": "CHLClient::FrameStageNotify",
+          "actions": [
+            {
+              "type": "StringSearch",
+              "arguments": ["stringabc1"]
+            },
+            {
+              "type": "PatternSearchSelf",
+              "arguments": ["E8 ? ? ? ? 90 90"]
+            },
+            {
+              "type": "FollowJmp",
+              "arguments": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
