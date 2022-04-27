@@ -20,7 +20,8 @@ fun main() {
             continue
         }
 
-        println("Module has ${moduleBytes.size} bytes")
+        val moduleProcessor = ModuleProcessor(moduleBytes, module)
+        moduleProcessor.process()
     }
 
 }

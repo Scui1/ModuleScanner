@@ -10,11 +10,7 @@
           "actions": [
             {
               "type": "PatternSearch",
-              "arguments": ["55 8B EC"]
-            },
-            {
-              "type": "Offset",
-              "arguments": ["10"]
+              "arguments": ["55 8B EC 8B 4D 04 83 EC 08 E8"]
             }
           ]
         },
