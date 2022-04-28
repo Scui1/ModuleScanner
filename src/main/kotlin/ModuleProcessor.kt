@@ -1,4 +1,4 @@
-import actions.PatternSearch
+import actions.ActionManager
 import pefile.PEFile
 
 class ModuleProcessor(private val moduleBytes: ByteArray, var moduleConfig: json.config.Module) {
@@ -11,18 +11,21 @@ class ModuleProcessor(private val moduleBytes: ByteArray, var moduleConfig: json
         }
 
         for (pattern in moduleConfig.patterns) {
-            println("Processing pattern: ${pattern.name}")
 
+            var currentAddress = 0
             for (action in pattern.actions) {
-                if (action.type == "PatternSearch") {
-                    val obj = PatternSearch()
-                    val execResult = obj.execute(peFile, action.arguments)
-                    println("Execute returned: $execResult")
+                currentAddress = ActionManager.executeAction(action, peFile, currentAddress)
+                if (currentAddress == 0) {
+                    println("Failed to find pattern for ${pattern.name} because ${action.type} failed.")
+                    break
                 }
-                /*when (action.type) {
-                    "PatternSearch" ->
-                }*/
             }
+
+            if (currentAddress == 0)
+                continue
+
+            val patternResult = peFile.convertRawOffsetToVirtualOffset(currentAddress)
+            println("Offset for ${pattern.name} found: 0x${patternResult.toString(16)}")
         }
     }
 

@@ -33,6 +33,19 @@ class PEFile(val bytes: ByteArray) {
         return readInt(getPeHeaderOffset() + 0x74)
     }
 
+    fun convertRawOffsetToVirtualOffset(offset: Int): Int {
+        // fix difference between virtual and raw address, as we need the offset to the pattern in memory
+        // our patterns always target something in .text, so we use that to fix the offset
+        val textSection = getSectionByName(".text")
+        if (textSection == null) {
+            println("Failed to find .text section, this shouldn't happen")
+            return 0
+        }
+
+        val virtualRawDifference = textSection.virtualBase - textSection.rawBase
+        return offset + virtualRawDifference
+    }
+
     fun readInt(base: Int): Int {
         return read(base, 4).int
     }

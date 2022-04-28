@@ -2,11 +2,17 @@ package actions
 
 import pefile.PEFile
 
-class PatternSearch : ExecutableAction {
+object PatternSearch : ExecutableAction {
     override val name: String = "PatternSearch"
-    override fun execute(peFile: PEFile, arguments: List<String>): Int {
-        val pattern = arguments[0]
-        val wantedOccurrences = if (arguments.size > 1) arguments[1].toInt() else 1
+
+    private object Parameters {
+        const val PATTERN = 0
+        const val OCCURRENCES = 1
+    }
+
+    override fun execute(peFile: PEFile, currentOffset: Int, arguments: List<String>): Int {
+        val pattern = arguments[Parameters.PATTERN]
+        val wantedOccurrences = if (arguments.size > 1) arguments[Parameters.OCCURRENCES].toInt() else 1
 
         val patternBytes = mutableListOf<PatternByte>()
         pattern.split(" ").forEach {
@@ -21,8 +27,6 @@ class PatternSearch : ExecutableAction {
             println("Failed to find .text section, this shouldn't happen")
             return 0
         }
-        // fix difference between virtual and raw address, as we need the offset to the pattern in memory
-        val virtualRawDifference = textSection.virtualBase - textSection.rawBase
 
         var occurrences = 0
         var foundAddress = 0
@@ -31,7 +35,7 @@ class PatternSearch : ExecutableAction {
             val currentByte = peFile.bytes[i]
             if (patternBytes[bytesMatched].isWildcard || currentByte.toUByte() == patternBytes[bytesMatched].value) {
                 if (bytesMatched == 0)
-                    foundAddress = i + virtualRawDifference
+                    foundAddress = i
 
                 ++bytesMatched
             } else {
@@ -39,8 +43,14 @@ class PatternSearch : ExecutableAction {
                 foundAddress = 0
             }
 
-            if (bytesMatched >= patternBytes.size)
+            if (bytesMatched >= patternBytes.size) {
                 ++occurrences
+
+                if (occurrences < wantedOccurrences) {
+                    bytesMatched = 0
+                    foundAddress = 0
+                }
+            }
 
             if (occurrences >= wantedOccurrences)
                 return foundAddress
