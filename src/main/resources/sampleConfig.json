@@ -19,7 +19,7 @@
           "actions": [
             {
               "type": "StringSearch",
-              "arguments": ["stringabc1"]
+              "arguments": ["Player.GhostKnifeHit"]
             },
             {
               "type": "PatternSearchSelf",

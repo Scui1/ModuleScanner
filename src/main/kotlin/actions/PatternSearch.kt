@@ -1,5 +1,7 @@
 package actions
 
+import patternsearching.PatternByte
+import patternsearching.PatternSearcher
 import pefile.PEFile
 
 object PatternSearch : ExecutableAction {
@@ -28,36 +30,6 @@ object PatternSearch : ExecutableAction {
             return 0
         }
 
-        var occurrences = 0
-        var foundAddress = 0
-        var bytesMatched = 0
-        for (i in textSection.rawBase until textSection.rawBase + textSection.size) {
-            val currentByte = peFile.bytes[i]
-            if (patternBytes[bytesMatched].isWildcard || currentByte.toUByte() == patternBytes[bytesMatched].value) {
-                if (bytesMatched == 0)
-                    foundAddress = i
-
-                ++bytesMatched
-            } else {
-                bytesMatched = 0
-                foundAddress = 0
-            }
-
-            if (bytesMatched >= patternBytes.size) {
-                ++occurrences
-
-                if (occurrences < wantedOccurrences) {
-                    bytesMatched = 0
-                    foundAddress = 0
-                }
-            }
-
-            if (occurrences >= wantedOccurrences)
-                return foundAddress
-        }
-
-        return 0
+        return PatternSearcher.searchPattern(peFile, textSection, patternBytes, wantedOccurrences)
     }
-
-    data class PatternByte(val value: UByte, val isWildcard: Boolean)
 }

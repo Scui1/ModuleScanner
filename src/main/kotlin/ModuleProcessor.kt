@@ -24,7 +24,7 @@ class ModuleProcessor(private val moduleBytes: ByteArray, var moduleConfig: json
             if (currentAddress == 0)
                 continue
 
-            val patternResult = peFile.convertRawOffsetToVirtualOffset(currentAddress)
+            val patternResult = peFile.convertRawOffsetToVirtualOffset(currentAddress, ".text")
             println("Offset for ${pattern.name} found: 0x${patternResult.toString(16)}")
         }
     }

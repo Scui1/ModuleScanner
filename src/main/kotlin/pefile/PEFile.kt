@@ -4,7 +4,7 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
 class PEFile(val bytes: ByteArray) {
-    val sections = getModuleSections()
+    private val sections = getModuleSections()
 
     fun isValid(): Boolean {
         val str = "${this.bytes[0].toInt().toChar()}${this.bytes[1].toInt().toChar()}"
@@ -17,26 +17,9 @@ class PEFile(val bytes: ByteArray) {
         return sections.find { it.name == name }
     }
 
-    fun getPeHeaderOffset(): Int {
-        return readInt(0x3C)
-    }
-
-    fun getNumberOfSections(): Int {
-        return readShort(getPeHeaderOffset() + 6)
-    }
-
-    fun getDataDirectoriesOffset(): Int {
-        return getPeHeaderOffset() + 0x78
-    }
-
-    fun getNumberOfRvaAndSizes(): Int {
-        return readInt(getPeHeaderOffset() + 0x74)
-    }
-
-    fun convertRawOffsetToVirtualOffset(offset: Int): Int {
+    fun convertRawOffsetToVirtualOffset(offset: Int, sectionName: String): Int {
         // fix difference between virtual and raw address, as we need the offset to the pattern in memory
-        // our patterns always target something in .text, so we use that to fix the offset
-        val textSection = getSectionByName(".text")
+        val textSection = getSectionByName(sectionName)
         if (textSection == null) {
             println("Failed to find .text section, this shouldn't happen")
             return 0
@@ -46,15 +29,35 @@ class PEFile(val bytes: ByteArray) {
         return offset + virtualRawDifference
     }
 
-    fun readInt(base: Int): Int {
+    fun getImageBase(): Int {
+        return readInt(getPeHeaderOffset() + 0x34)
+    }
+
+    private fun getPeHeaderOffset(): Int {
+        return readInt(0x3C)
+    }
+
+    private fun getNumberOfSections(): Int {
+        return readShort(getPeHeaderOffset() + 6)
+    }
+
+    private fun getDataDirectoriesOffset(): Int {
+        return getPeHeaderOffset() + 0x78
+    }
+
+    private fun getNumberOfRvaAndSizes(): Int {
+        return readInt(getPeHeaderOffset() + 0x74)
+    }
+
+    private fun readInt(base: Int): Int {
         return read(base, 4).int
     }
 
-    fun readShort(base: Int): Int {
+    private fun readShort(base: Int): Int {
         return read(base, 2).short.toInt()
     }
 
-    fun readString(base: Int, size: Int): String {
+    private fun readString(base: Int, size: Int): String {
         return String(read(base, size).array()).trim { it <= ' ' } // remove null characters
     }
 
