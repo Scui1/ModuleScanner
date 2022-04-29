@@ -49,7 +49,7 @@ class PEFile(val bytes: ByteArray) {
         return readInt(getPeHeaderOffset() + 0x74)
     }
 
-    private fun readInt(base: Int): Int {
+    fun readInt(base: Int): Int {
         return read(base, 4).int
     }
 

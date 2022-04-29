@@ -22,8 +22,8 @@
               "arguments": ["Player.GhostKnifeHit"]
             },
             {
-              "type": "PatternSearchSelf",
-              "arguments": ["E8 ? ? ? ? 90 90"]
+              "type": "PatternSearch",
+              "arguments": ["E8 ?? ?? ?? ?? 83 C4 24 33 C0"]
             },
             {
               "type": "FollowJmp",

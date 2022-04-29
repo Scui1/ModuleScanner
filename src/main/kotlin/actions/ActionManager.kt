@@ -4,7 +4,7 @@ import json.config.Action
 import pefile.PEFile
 
 object ActionManager {
-    private val actions = listOf(PatternSearch, StringSearch, Offset)
+    private val actions = listOf(PatternSearch, StringSearch, Offset, FollowJmp)
 
     fun executeAction(action: Action, peFile: PEFile, currentOffset: Int): Int {
         val executableAction = findActionByName(action.type)
