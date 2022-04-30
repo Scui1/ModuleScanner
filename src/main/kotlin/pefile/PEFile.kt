@@ -50,7 +50,11 @@ class PEFile(val bytes: ByteArray) {
     }
 
     fun readInt(base: Int): Int {
-        return read(base, 4).int
+        return readIntWithSize(base, 4)
+    }
+
+    fun readIntWithSize(base: Int, size: Int): Int {
+        return read(base, size).int
     }
 
     private fun readShort(base: Int): Int {
