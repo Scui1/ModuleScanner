@@ -21,7 +21,7 @@ object StringSearch : ExecutableAction {
         val rawRdataAddress = findStringInRdata(peFile, string, addNullTerminator)
         if (rawRdataAddress == 0) {
             println("String $string couldn't be found.")
-            return 0
+            return ActionResultType.ERROR
         }
 
         // push instruction uses the virtual address of the string in rdata + image base
@@ -33,10 +33,14 @@ object StringSearch : ExecutableAction {
         val textSection = peFile.getSectionByName(".text")
         if (textSection == null) {
             println("Failed to find .text section, this shouldn't happen")
-            return 0
+            return ActionResultType.ERROR
         }
 
-        return PatternSearcher.searchPattern(peFile, textSection, patternBytes, wantedOccurrences)
+        val foundAddress = PatternSearcher.searchPattern(peFile, textSection, patternBytes, wantedOccurrences)
+        return if (foundAddress == 0)
+            ActionResultType.ERROR
+        else
+            foundAddress
     }
 
     private fun findStringInRdata(peFile: PEFile, string: String, addNullTerminator: Boolean): Int {

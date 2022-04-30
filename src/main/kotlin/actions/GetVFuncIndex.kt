@@ -13,9 +13,10 @@ object GetVFuncIndex : ExecutableAction {
         val sizeToRead = if (arguments.isNotEmpty()) arguments[Parameters.SIZE].toInt() else 4
 
         val intValue = peFile.readIntWithSize(currentOffset, sizeToRead)
-        return when (intValue) {
-            0 -> 0
-            else -> intValue / 4
+
+        return when {
+            intValue.mod(4) == 0 -> intValue / 4
+            else -> ActionResultType.ERROR // we assume if the value isn't divideable by 4, the sig is wrong
         }
     }
 }

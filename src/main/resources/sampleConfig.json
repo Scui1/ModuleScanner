@@ -7,6 +7,7 @@
       "patterns": [
         {
           "name": "CHLClient::CreateMove",
+          "type": "Address",
           "actions": [
             {
               "type": "PatternSearch",
@@ -16,6 +17,7 @@
         },
         {
           "name": "CHLClient::FrameStageNotify",
+          "type": "Address",
           "actions": [
             {
               "type": "StringSearch",

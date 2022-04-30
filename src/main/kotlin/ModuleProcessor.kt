@@ -1,4 +1,6 @@
 import actions.ActionManager
+import actions.ActionResultType
+import json.config.PatternType
 import pefile.PEFile
 
 class ModuleProcessor(private val moduleBytes: ByteArray, var moduleConfig: json.config.Module) {
@@ -12,20 +14,24 @@ class ModuleProcessor(private val moduleBytes: ByteArray, var moduleConfig: json
 
         for (pattern in moduleConfig.patterns) {
 
-            var currentAddress = 0
+            var currentResult = 0
             for (action in pattern.actions) {
-                currentAddress = ActionManager.executeAction(action, peFile, currentAddress)
-                if (currentAddress == 0) {
+                currentResult = ActionManager.executeAction(action, peFile, currentResult)
+                if (currentResult == ActionResultType.ERROR) {
                     println("Failed to find pattern for ${pattern.name} because ${action.type} failed.")
                     break
                 }
             }
 
-            if (currentAddress == 0)
+            if (currentResult == ActionResultType.ERROR)
                 continue
 
-            val patternResult = peFile.convertRawOffsetToVirtualOffset(currentAddress, ".text")
-            println("Offset for ${pattern.name} found: 0x${patternResult.toString(16)}")
+            if (pattern.type == PatternType.ADDRESS) {
+                val patternResult = peFile.convertRawOffsetToVirtualOffset(currentResult, ".text")
+                println("Offset for ${pattern.name} found: 0x${patternResult.toString(16)}")
+            }
+
+            // TODO: Exporting result
         }
     }
 

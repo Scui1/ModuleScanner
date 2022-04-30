@@ -10,7 +10,7 @@ object ActionManager {
         val executableAction = findActionByName(action.type)
         if (executableAction == null) {
             println("Action ${action.type} doesn't exist. Please check your spelling")
-            return 0
+            return ActionResultType.ERROR
         }
 
         return executableAction.execute(peFile, currentOffset, action.arguments)

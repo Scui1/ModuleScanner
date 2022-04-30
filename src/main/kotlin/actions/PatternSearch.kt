@@ -31,13 +31,18 @@ object PatternSearch : ExecutableAction {
         val textSection = peFile.getSectionByName(".text")
         if (textSection == null) {
             println("Failed to find .text section, this shouldn't happen")
-            return 0
+            return ActionResultType.ERROR
         }
 
         // currentOffset == 0 means this is the first action for a pattern. We are scanning the whole text section, not only until maxBytesToSearch
-        return if (currentOffset == 0)
+        val foundAddress = if (currentOffset == 0)
             PatternSearcher.searchPattern(peFile, textSection, patternBytes, wantedOccurrences)
         else
             PatternSearcher.searchPattern(peFile, textSection, patternBytes.reversed(), wantedOccurrences, currentOffset, maxBytesToSearch, searchDirection)
+
+        return if (foundAddress == 0)
+            ActionResultType.ERROR
+        else
+            foundAddress
     }
 }
