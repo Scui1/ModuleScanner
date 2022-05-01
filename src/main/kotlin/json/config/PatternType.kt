@@ -4,7 +4,8 @@ import kotlinx.serialization.SerialName
 
 @kotlinx.serialization.Serializable
 enum class PatternType {
-    @SerialName("Address") ADDRESS,
+    @SerialName("Function") FUNCTION,
+    @SerialName("ReturnAddress") RETURN_ADDRESS,
     @SerialName("Offset") OFFSET,
     @SerialName("Index") INDEX
 }

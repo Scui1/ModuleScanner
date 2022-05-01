@@ -1,8 +1,11 @@
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import java.io.File
 import java.io.IOException
 
 fun main() {
     val config = readConfig()?: return
+    val result = json.output.Result()
 
     for (module in config.modules) {
         val inputFile = File(config.modulePath).resolve(module.name)
@@ -20,8 +23,9 @@ fun main() {
             continue
         }
 
-        val moduleProcessor = ModuleProcessor(moduleBytes, module)
+        val moduleProcessor = ModuleProcessor(moduleBytes, module, result)
         moduleProcessor.process()
     }
 
+    println(Json.encodeToString(result))
 }

@@ -1,9 +1,10 @@
 import actions.ActionManager
 import actions.ActionResultType
 import json.config.PatternType
+import json.output.ScanError
 import pefile.PEFile
 
-class ModuleProcessor(private val moduleBytes: ByteArray, var moduleConfig: json.config.Module) {
+class ModuleProcessor(private val moduleBytes: ByteArray, private val moduleConfig: json.config.Module, private val output: json.output.Result) {
 
     fun process() {
         val peFile = PEFile(moduleBytes)
@@ -18,6 +19,7 @@ class ModuleProcessor(private val moduleBytes: ByteArray, var moduleConfig: json
             for (action in pattern.actions) {
                 currentResult = ActionManager.executeAction(action, peFile, currentResult)
                 if (currentResult == ActionResultType.ERROR) {
+                    output.errors.add(ScanError(pattern.name, "${action.type} failed"))
                     println("Failed to find pattern for ${pattern.name} because ${action.type} failed.")
                     break
                 }
@@ -26,12 +28,19 @@ class ModuleProcessor(private val moduleBytes: ByteArray, var moduleConfig: json
             if (currentResult == ActionResultType.ERROR)
                 continue
 
-            if (pattern.type == PatternType.ADDRESS) {
-                val patternResult = peFile.convertRawOffsetToVirtualOffset(currentResult, ".text")
-                println("Offset for ${pattern.name} found: 0x${patternResult.toString(16)}")
+            if (pattern.type == PatternType.FUNCTION || pattern.type == PatternType.RETURN_ADDRESS) {
+                currentResult = peFile.convertRawOffsetToVirtualOffset(currentResult, ".text")
+                println("${pattern.type} ${pattern.name} found: 0x${currentResult.toString(16)}")
+            } else {
+                println("${pattern.type} ${pattern.name} found: $currentResult")
             }
 
-            // TODO: Exporting result
+            when (pattern.type) {
+                PatternType.FUNCTION -> output.function[pattern.name] = currentResult
+                PatternType.RETURN_ADDRESS -> output.returnaddress[pattern.name] = currentResult
+                PatternType.INDEX -> output.vfunc[pattern.name] = currentResult
+                PatternType.OFFSET -> output.offset[pattern.name] = currentResult
+            }
         }
     }
 
