@@ -17,7 +17,7 @@ object PatternSearch : ExecutableAction {
     override fun execute(peFile: PEFile, currentOffset: Int, arguments: List<String>): Int {
         val pattern = arguments[Parameters.PATTERN]
         val wantedOccurrences = if (arguments.size > 1) arguments[Parameters.OCCURRENCES].toInt() else 1
-        val searchDirection = if (arguments.size > 2) arguments[Parameters.SEARCH_DIRECTION].toInt() else PatternSearcher.SearchDirection.DOWN
+        val searchDirection = if (arguments.size > 2) arguments[Parameters.SEARCH_DIRECTION] else "DOWN"
         val maxBytesToSearch = if (arguments.size > 3) arguments[Parameters.MAX_BYTES_TO_SEARCH].toInt() else 200
 
         val patternBytes = mutableListOf<PatternByte>()
@@ -37,8 +37,11 @@ object PatternSearch : ExecutableAction {
         // currentOffset == 0 means this is the first action for a pattern. We are scanning the whole text section, not only until maxBytesToSearch
         val foundAddress = if (currentOffset == 0)
             PatternSearcher.searchPattern(peFile, textSection, patternBytes, wantedOccurrences)
-        else
-            PatternSearcher.searchPattern(peFile, textSection, patternBytes.reversed(), wantedOccurrences, currentOffset, maxBytesToSearch, searchDirection)
+        else {
+            // when searching up, we just start from current address - maxbytes and search from there on
+            val startOffset = if (searchDirection.equals("UP", true)) -maxBytesToSearch else 0
+            PatternSearcher.searchPattern(peFile, textSection, patternBytes, wantedOccurrences, currentOffset + startOffset, maxBytesToSearch)
+        }
 
         return if (foundAddress == 0)
             ActionResultType.ERROR

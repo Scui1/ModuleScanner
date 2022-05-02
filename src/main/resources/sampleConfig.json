@@ -16,8 +16,8 @@
           ]
         },
         {
-          "name": "CHLClient::FrameStageNotify",
-          "type": "Function",
+          "name": "C_BaseEntity::IsPlayer",
+          "type": "Index",
           "actions": [
             {
               "type": "StringSearch",
@@ -25,7 +25,15 @@
             },
             {
               "type": "PatternSearch",
-              "arguments": ["8B 80", "1", "-1"]
+              "arguments": ["8B 80", "1", "UP"]
+            },
+            {
+              "type": "Offset",
+              "arguments": ["2"]
+            },
+            {
+              "type": "GetVFuncIndex",
+              "arguments": ["4"]
             }
           ]
         }
