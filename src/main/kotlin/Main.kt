@@ -27,5 +27,6 @@ fun main() {
         moduleProcessor.process()
     }
 
-    println(Json.encodeToString(result))
+    val json = Json { prettyPrint = true }
+    println(json.encodeToString(result))
 }
