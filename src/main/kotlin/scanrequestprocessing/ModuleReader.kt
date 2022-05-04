@@ -1,30 +1,47 @@
+package scanrequestprocessing
+
+import PropertiesReader
 import pefile.PEFile
 import java.io.File
 import java.io.IOException
+import kotlin.system.exitProcess
 
-private const val moduleDirectory = "B:\\Trash\\moduleScannerInput" // TODO: make this configurable
+object ModuleReader {
 
-fun readModulePEFile(moduleName: String): PEFile? {
-    val inputFile = File(moduleDirectory).resolve(moduleName)
+    private var moduleDirectory: String
 
-    val moduleBytes: ByteArray
-    try {
-        moduleBytes = inputFile.readBytes()
-    } catch (e: IOException) {
-        println("Module $moduleName couldn't be read: ${e.message}")
-        return null
+    init {
+        val directoryProp = PropertiesReader.getProperty("moduleDirectory")
+        if (directoryProp != null && File(directoryProp).exists()) {
+            moduleDirectory = directoryProp
+        } else {
+            println("Mdoule directory not found")
+            exitProcess(1)
+        }
     }
 
-    if (moduleBytes.isEmpty()) {
-        println("Module $moduleName couldn't be read")
-        return null
-    }
+    fun readModulePEFile(moduleName: String): PEFile? {
+        val inputFile = File(moduleDirectory).resolve(moduleName)
 
-    val peFile = PEFile(moduleBytes)
-    if (!peFile.isValid()) {
-        println("Module $moduleName is not a valid pe file, module won't be processed")
-        return null
-    }
+        val moduleBytes: ByteArray
+        try {
+            moduleBytes = inputFile.readBytes()
+        } catch (e: IOException) {
+            println("Module $moduleName couldn't be read: ${e.message}")
+            return null
+        }
 
-    return peFile
+        if (moduleBytes.isEmpty()) {
+            println("Module $moduleName couldn't be read")
+            return null
+        }
+
+        val peFile = PEFile(moduleBytes)
+        if (!peFile.isValid()) {
+            println("Module $moduleName is not a valid pe file, module won't be processed")
+            return null
+        }
+
+        return peFile
+    }
 }
