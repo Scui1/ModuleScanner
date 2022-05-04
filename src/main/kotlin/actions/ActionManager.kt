@@ -1,6 +1,6 @@
 package actions
 
-import json.config.Action
+import json.scanrequest.Action
 import pefile.PEFile
 
 object ActionManager {

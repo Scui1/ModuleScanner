@@ -1,7 +1,7 @@
 package actions
 
 import patternsearching.PatternByte
-import patternsearching.PatternSearcher
+import patternsearching.searchPattern
 import pefile.PEFile
 
 object PatternSearch : ExecutableAction {
@@ -36,11 +36,11 @@ object PatternSearch : ExecutableAction {
 
         // currentOffset == 0 means this is the first action for a pattern. We are scanning the whole text section, not only until maxBytesToSearch
         val foundAddress = if (currentOffset == 0)
-            PatternSearcher.searchPattern(peFile, textSection, patternBytes, wantedOccurrences)
+            searchPattern(peFile, textSection, patternBytes, wantedOccurrences)
         else {
             // when searching up, we just start from current address - maxbytes and search from there on
             val startOffset = if (searchDirection.equals("UP", true)) -maxBytesToSearch else 0
-            PatternSearcher.searchPattern(peFile, textSection, patternBytes, wantedOccurrences, currentOffset + startOffset, maxBytesToSearch)
+            searchPattern(peFile, textSection, patternBytes, wantedOccurrences, currentOffset + startOffset, maxBytesToSearch)
         }
 
         return if (foundAddress == 0)

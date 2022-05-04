@@ -1,7 +1,7 @@
 package actions
 
 import patternsearching.PatternByte
-import patternsearching.PatternSearcher
+import patternsearching.searchPattern
 import pefile.PEFile
 
 object StringSearch : ExecutableAction {
@@ -36,7 +36,7 @@ object StringSearch : ExecutableAction {
             return ActionResultType.ERROR
         }
 
-        val foundAddress = PatternSearcher.searchPattern(peFile, textSection, patternBytes, wantedOccurrences)
+        val foundAddress = searchPattern(peFile, textSection, patternBytes, wantedOccurrences)
         return if (foundAddress == 0)
             ActionResultType.ERROR
         else
@@ -55,6 +55,6 @@ object StringSearch : ExecutableAction {
             return 0
         }
 
-        return PatternSearcher.searchPattern(peFile, rdataSection, stringBytes, 1)
+        return searchPattern(peFile, rdataSection, stringBytes, 1)
     }
 }

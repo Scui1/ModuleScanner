@@ -1,4 +1,4 @@
-package json.config
+package json.scanrequest
 
 import kotlinx.serialization.Serializable
 

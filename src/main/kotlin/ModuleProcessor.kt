@@ -1,10 +1,10 @@
 import actions.ActionManager
 import actions.ActionResultType
-import json.config.PatternType
-import json.output.ScanError
+import json.scanrequest.PatternType
+import json.scanresult.ScanError
 import pefile.PEFile
 
-class ModuleProcessor(private val moduleBytes: ByteArray, private val moduleConfig: json.config.Module, private val output: json.output.Result) {
+class ModuleProcessor(private val moduleBytes: ByteArray, private val moduleConfig: json.scanrequest.Module, private val output: json.scanresult.ScanResult) {
 
     fun process() {
         val peFile = PEFile(moduleBytes)
