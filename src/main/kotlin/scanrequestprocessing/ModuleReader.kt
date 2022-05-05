@@ -1,24 +1,20 @@
 package scanrequestprocessing
 
-import PropertiesReader
+import io.ktor.server.config.*
 import pefile.PEFile
 import java.io.File
 import java.io.IOException
-import kotlin.system.exitProcess
 
 object ModuleReader {
 
-    private var moduleDirectory: String
-
-    init {
-        val directoryProp = PropertiesReader.getProperty("moduleDirectory")
-        if (directoryProp != null && File(directoryProp).exists()) {
-            moduleDirectory = directoryProp
-        } else {
-            println("Mdoule directory not found")
-            exitProcess(1)
+    var moduleDirectory: String = ""
+        set(value)  {
+            val file = File(value)
+            if (file.exists() && file.isDirectory)
+                field = value
+            else
+                throw ApplicationConfigurationException("Module dir $value doesn't exist")
         }
-    }
 
     fun readModulePEFile(moduleName: String): PEFile? {
         val inputFile = File(moduleDirectory).resolve(moduleName)
