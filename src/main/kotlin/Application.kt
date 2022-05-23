@@ -2,6 +2,7 @@ import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
 import io.ktor.server.plugins.contentnegotiation.*
+import io.ktor.server.plugins.cors.routing.*
 import io.ktor.server.plugins.statuspages.*
 import io.ktor.server.response.*
 import scanrequestprocessing.ModuleReader
@@ -19,6 +20,12 @@ fun Application.main() {
             call.respondText(text = "500: $cause" , status = HttpStatusCode.InternalServerError)
         }
     }
+    install(CORS) {
+        allowSameOrigin = true
+        allowHost("localhost:3000")
+        allowHeader(HttpHeaders.ContentType)
+    }
+
     configureRouting()
 
     ModuleReader.moduleDirectory = environment.config.property("moduleDirectory").getString()
