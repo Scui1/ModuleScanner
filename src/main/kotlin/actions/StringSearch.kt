@@ -15,8 +15,8 @@ object StringSearch : ExecutableAction {
 
     override fun execute(peFile: PEFile, currentOffset: Int, arguments: List<String>): Int {
         val string = arguments[Parameters.STRING]
-        val wantedOccurrences = if (arguments.size > 1) arguments[Parameters.OCCURRENCE].toInt() else 1
-        val addNullTerminator = if (arguments.size > 2) arguments[Parameters.ADD_NULL_TERMINATOR].toBooleanStrict() else false
+        val wantedOccurrences = if (arguments.size > 1) arguments[Parameters.OCCURRENCE].toIntOrNull()?: 1 else 1
+        val addNullTerminator = if (arguments.size > 2) arguments[Parameters.ADD_NULL_TERMINATOR].toBoolean() else false
 
         val rawRdataAddress = findStringInRdata(peFile, string, addNullTerminator)
         if (rawRdataAddress == 0) {

@@ -10,7 +10,7 @@ object GetVFuncIndex : ExecutableAction {
     }
 
     override fun execute(peFile: PEFile, currentOffset: Int, arguments: List<String>): Int {
-        val sizeToRead = if (arguments.isNotEmpty()) arguments[Parameters.SIZE].toInt() else 4
+        val sizeToRead = if (arguments.isNotEmpty()) arguments[Parameters.SIZE].toIntOrNull()?: 4 else 4
 
         val intValue = peFile.readIntWithSize(currentOffset, sizeToRead)
 

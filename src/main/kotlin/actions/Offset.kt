@@ -10,7 +10,11 @@ object Offset : ExecutableAction {
     }
 
     override fun execute(peFile: PEFile, currentOffset: Int, arguments: List<String>): Int {
-        val offsetValue = arguments[Parameters.OFFSET].toInt()
-        return currentOffset + offsetValue
+        val offsetValue = arguments[Parameters.OFFSET].toIntOrNull()
+
+        return when(offsetValue) {
+            null -> ActionResultType.ERROR
+            else -> currentOffset + offsetValue
+        }
     }
 }

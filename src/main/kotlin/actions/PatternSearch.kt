@@ -16,9 +16,9 @@ object PatternSearch : ExecutableAction {
 
     override fun execute(peFile: PEFile, currentOffset: Int, arguments: List<String>): Int {
         val pattern = arguments[Parameters.PATTERN]
-        val wantedOccurrences = if (arguments.size > 1) arguments[Parameters.OCCURRENCES].toInt() else 1
+        val wantedOccurrences = if (arguments.size > 1) arguments[Parameters.OCCURRENCES].toIntOrNull()?:1 else 1
         val searchDirection = if (arguments.size > 2) arguments[Parameters.SEARCH_DIRECTION] else "DOWN"
-        val maxBytesToSearch = if (arguments.size > 3) arguments[Parameters.MAX_BYTES_TO_SEARCH].toInt() else 200
+        val maxBytesToSearch = if (arguments.size > 3) arguments[Parameters.MAX_BYTES_TO_SEARCH].toIntOrNull()?: 200 else 200
 
         val patternBytes = mutableListOf<PatternByte>()
         pattern.split(" ").forEach {
