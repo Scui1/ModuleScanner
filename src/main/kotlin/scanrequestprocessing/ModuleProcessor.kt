@@ -8,12 +8,12 @@ fun processModule(peFile: PEFile, moduleConfig: json.scanrequest.Module, output:
     for (pattern in moduleConfig.patterns) {
 
         var currentResult = 0
-        for (action in pattern.actions) {
+        pattern.actions.forEachIndexed { index, action ->
             currentResult = ActionManager.executeAction(action, peFile, currentResult)
             if (currentResult == ActionResultType.ERROR) {
-                output.errors.add(ScanError(pattern.name, "${action.type} failed"))
+                output.errors.add(ScanError(pattern.name, "Action ${index + 1} (${action.type}) failed"))
                 println("Failed to find pattern for ${pattern.name} because ${action.type} failed.")
-                break
+                return@forEachIndexed
             }
         }
 
