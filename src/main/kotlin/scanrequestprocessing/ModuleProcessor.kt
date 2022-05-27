@@ -7,6 +7,12 @@ import pefile.PEFile
 fun processModule(peFile: PEFile, moduleConfig: json.scanrequest.Module, output: json.scanresult.ScanResult) {
     for (pattern in moduleConfig.patterns) {
 
+        if (pattern.actions.isEmpty()) {
+            output.errors.add(ScanError(pattern.name, "No actions are defined."))
+            println("Failed to find pattern for ${pattern.name} because no actions are defined.")
+            continue
+        }
+
         var currentResult = 0
         pattern.actions.forEachIndexed { index, action ->
             currentResult = ActionManager.executeAction(action, peFile, currentResult)
