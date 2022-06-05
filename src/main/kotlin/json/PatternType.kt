@@ -1,4 +1,4 @@
-package json.scanrequest
+package json
 
 import kotlinx.serialization.SerialName
 

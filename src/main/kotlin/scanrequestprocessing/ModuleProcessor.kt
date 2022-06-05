@@ -1,6 +1,6 @@
 import actions.ActionManager
 import actions.ActionResultType
-import json.scanrequest.PatternType
+import json.PatternType
 import json.scanresult.ScanError
 import pefile.PEFile
 
@@ -8,7 +8,7 @@ fun processModule(peFile: PEFile, moduleConfig: json.scanrequest.Module, output:
     for (pattern in moduleConfig.patterns) {
 
         if (pattern.actions.isEmpty()) {
-            output.errors.add(ScanError(pattern.name, "No actions are defined."))
+            output.errors.add(ScanError(pattern.type, pattern.name, "No actions are defined."))
             println("Failed to find pattern for ${pattern.name} because no actions are defined.")
             continue
         }
@@ -17,7 +17,7 @@ fun processModule(peFile: PEFile, moduleConfig: json.scanrequest.Module, output:
         pattern.actions.forEachIndexed { index, action ->
             currentResult = ActionManager.executeAction(action, peFile, currentResult)
             if (currentResult == ActionResultType.ERROR) {
-                output.errors.add(ScanError(pattern.name, "Action ${index + 1} (${action.type}) failed"))
+                output.errors.add(ScanError(pattern.type, pattern.name, "Action ${index + 1} (${action.type}) failed"))
                 println("Failed to find pattern for ${pattern.name} because ${action.type} failed.")
                 return@forEachIndexed
             }
