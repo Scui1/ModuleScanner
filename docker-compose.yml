@@ -1,0 +1,7 @@
+services:
+  modulescanner:
+    image: scui2/modulescanner:latest
+    ports:
+      - "8080:8080"
+    volumes:
+      - "/home/modulesToScan:/app/modules"
