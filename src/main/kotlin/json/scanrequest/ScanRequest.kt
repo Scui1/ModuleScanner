@@ -1,4 +1,4 @@
 package json.scanrequest
 
 @kotlinx.serialization.Serializable
-data class ScanRequest(val modulePath: String, val modules: List<Module>)
+data class ScanRequest(val modules: List<Module>)
