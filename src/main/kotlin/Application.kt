@@ -18,7 +18,7 @@ fun Application.main() {
     install(StatusPages) {
         exception<Throwable> { call, cause ->
             cause.printStackTrace()
-            call.respondText(text = cause.stackTraceToString() , status = HttpStatusCode.InternalServerError)
+            call.respondText(text = cause.stackTraceToString(), status = HttpStatusCode.InternalServerError)
         }
     }
     install(CORS) {

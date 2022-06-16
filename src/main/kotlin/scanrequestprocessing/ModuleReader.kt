@@ -8,7 +8,7 @@ import java.io.IOException
 object ModuleReader {
 
     var moduleDirectory: String = ""
-        set(value)  {
+        set(value) {
             val file = File(value)
             if (file.exists() && file.isDirectory)
                 field = value
