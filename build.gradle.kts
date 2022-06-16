@@ -1,3 +1,5 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
 val ktorVersion = "2.0.2"
 
 plugins {
@@ -6,6 +8,8 @@ plugins {
     kotlin("plugin.serialization") version "1.7.0"
     id("com.github.johnrengelman.shadow") version "7.1.2"
 }
+
+
 
 group = "de.modulescanner"
 version = "1.0-SNAPSHOT"
@@ -25,4 +29,8 @@ dependencies {
     implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
     implementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
     implementation("io.ktor:ktor-server-cors:$ktorVersion")
+}
+
+tasks.withType<ShadowJar> {
+    archiveFileName.set("modulescanner.jar")
 }
