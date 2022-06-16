@@ -1,7 +1,9 @@
+val ktorVersion = "2.0.2"
+
 plugins {
     application
-    kotlin("jvm") version "1.6.21"
-    kotlin("plugin.serialization") version "1.6.21"
+    kotlin("jvm") version "1.7.0"
+    kotlin("plugin.serialization") version "1.7.0"
 }
 
 group = "de.modulescanner"
@@ -15,7 +17,6 @@ repositories {
 }
 
 dependencies {
-    val ktorVersion = "2.0.2"
     implementation("io.ktor:ktor-server-core:$ktorVersion")
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
     implementation("ch.qos.logback:logback-classic:1.2.11")
