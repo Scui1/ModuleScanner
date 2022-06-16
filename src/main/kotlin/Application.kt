@@ -23,7 +23,7 @@ fun Application.main() {
     }
     install(CORS) {
         allowSameOrigin = true
-        allowHost("localhost:3000")
+        anyHost()
         allowHeader(HttpHeaders.ContentType)
     }
 
