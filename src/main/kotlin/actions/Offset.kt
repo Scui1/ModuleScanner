@@ -13,7 +13,7 @@ object Offset : ExecutableAction {
         val offsetValue = arguments[Parameters.OFFSET].toIntOrNull()
 
         return when(offsetValue) {
-            null -> ActionResultType.ERROR
+            null -> throw ActionException("No offset value was provided.")
             else -> currentOffset + offsetValue
         }
     }

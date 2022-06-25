@@ -1,11 +1,11 @@
+import actions.ActionException
 import actions.ActionManager
-import actions.ActionResultType
 import json.PatternType
 import json.scanresult.ScanError
 import pefile.PEFile
 
 fun processModule(peFile: PEFile, moduleConfig: json.scanrequest.Module, output: json.scanresult.ScanResult) {
-    for (pattern in moduleConfig.patterns) {
+    patternLoop@ for (pattern in moduleConfig.patterns) {
 
         if (pattern.actions.isEmpty()) {
             output.errors.add(ScanError(pattern.type, pattern.name, "No actions are defined."))
@@ -14,17 +14,16 @@ fun processModule(peFile: PEFile, moduleConfig: json.scanrequest.Module, output:
         }
 
         var currentResult = 0
-        pattern.actions.forEachIndexed { index, action ->
-            currentResult = ActionManager.executeAction(action, peFile, currentResult)
-            if (currentResult == ActionResultType.ERROR) {
-                output.errors.add(ScanError(pattern.type, pattern.name, "Action ${index + 1} (${action.type}) failed"))
+        for (i in pattern.actions.indices) {
+            val action = pattern.actions[i]
+            try {
+                currentResult = ActionManager.executeAction(action, peFile, currentResult)
+            } catch (exception: ActionException) {
+                output.errors.add(ScanError(pattern.type, pattern.name, "Action ${i + 1} (${action.type}) failed. ${exception.message}"))
                 println("Failed to find pattern for ${pattern.name} because ${action.type} failed.")
-                return@forEachIndexed
+                continue@patternLoop
             }
         }
-
-        if (currentResult == ActionResultType.ERROR)
-            continue
 
         if (pattern.type == PatternType.FUNCTION || pattern.type == PatternType.RETURN_ADDRESS) {
             currentResult = peFile.convertRawOffsetToVirtualOffset(currentResult, ".text")

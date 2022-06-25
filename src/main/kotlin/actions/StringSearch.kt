@@ -19,28 +19,23 @@ object StringSearch : ExecutableAction {
         val addNullTerminator = if (arguments.size > 2) arguments[Parameters.ADD_NULL_TERMINATOR].toBoolean() else false
 
         val rawRdataAddress = findStringInRdata(peFile, string, addNullTerminator)
-        if (rawRdataAddress == 0) {
-            println("String $string couldn't be found.")
-            return ActionResultType.ERROR
-        }
+        if (rawRdataAddress == 0)
+            throw ActionException("String '$string' couldn't be found.")
 
         // push instruction uses the virtual address of the string in rdata + image base
         val virtualRdataAddress = peFile.convertRawOffsetToVirtualOffset(rawRdataAddress, ".rdata") + peFile.getImageBase()
-        val patternBytes = mutableListOf<PatternByte>(PatternByte(0x68u)) // push instruction
+        val patternBytes = mutableListOf(PatternByte(0x68u)) // push instruction
         for (i in 0..3)
             patternBytes.add(PatternByte((virtualRdataAddress shr i * 8).toUByte()))
 
         val textSection = peFile.getSectionByName(".text")
-        if (textSection == null) {
-            println("Failed to find .text section, this shouldn't happen")
-            return ActionResultType.ERROR
-        }
+            ?: throw ActionException("Failed to find .text section, this shouldn't happen")
 
         val foundAddress = searchPattern(peFile, textSection, patternBytes, wantedOccurrences)
-        return if (foundAddress == 0)
-            ActionResultType.ERROR
-        else
-            foundAddress
+        return when (foundAddress) {
+            0 -> throw ActionException("No xrefs in .text section found for string '$string'.")
+            else -> foundAddress
+        }
     }
 
     private fun findStringInRdata(peFile: PEFile, string: String, addNullTerminator: Boolean): Int {
@@ -50,10 +45,7 @@ object StringSearch : ExecutableAction {
             stringBytes.add(PatternByte(0u))
 
         val rdataSection = peFile.getSectionByName(".rdata")
-        if (rdataSection == null) {
-            println("Failed to find .rdata section, this shouldn't happen")
-            return 0
-        }
+            ?: throw ActionException("Failed to find .rdata section, this shouldn't happen")
 
         return searchPattern(peFile, rdataSection, stringBytes, 1)
     }

@@ -16,7 +16,7 @@ object GetVFuncIndex : ExecutableAction {
 
         return when {
             intValue.mod(4) == 0 -> intValue / 4
-            else -> ActionResultType.ERROR // we assume if the value isn't divideable by 4, the sig is wrong
+            else -> throw ActionException("Value '$intValue' is not a vfunc index.") // we assume if the value isn't divideable by 4, the sig is wrong
         }
     }
 }
