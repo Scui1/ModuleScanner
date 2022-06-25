@@ -1,9 +1,12 @@
 package scanrequestprocessing
 
 import io.ktor.server.config.*
+import org.slf4j.LoggerFactory
 import pefile.PEFile
 import java.io.File
 import java.io.IOException
+
+private val logger = LoggerFactory.getLogger("ModuleProcessor")
 
 object ModuleReader {
 
@@ -23,18 +26,18 @@ object ModuleReader {
         try {
             moduleBytes = inputFile.readBytes()
         } catch (e: IOException) {
-            println("Module $moduleName couldn't be read: ${e.message}")
+            logger.error("Module $moduleName couldn't be read: ${e.message}")
             return null
         }
 
         if (moduleBytes.isEmpty()) {
-            println("Module $moduleName couldn't be read")
+            logger.error("Module $moduleName couldn't be read")
             return null
         }
 
         val peFile = PEFile(moduleBytes)
         if (!peFile.isValid()) {
-            println("Module $moduleName is not a valid pe file, module won't be processed")
+            logger.error("Module $moduleName is not a valid pe file, module won't be processed")
             return null
         }
 

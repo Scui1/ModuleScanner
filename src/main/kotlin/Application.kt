@@ -5,8 +5,11 @@ import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.plugins.cors.routing.*
 import io.ktor.server.plugins.statuspages.*
 import io.ktor.server.response.*
+import org.slf4j.LoggerFactory
 import scanrequestprocessing.ModuleReader
 import web.configureRouting
+
+private val logger = LoggerFactory.getLogger("Application")
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
@@ -17,8 +20,9 @@ fun Application.main() {
     }
     install(StatusPages) {
         exception<Throwable> { call, cause ->
-            cause.printStackTrace()
-            call.respondText(text = cause.stackTraceToString(), status = HttpStatusCode.InternalServerError)
+            val exceptionMsg = cause.stackTraceToString()
+            logger.warn(exceptionMsg)
+            call.respondText(text = exceptionMsg, status = HttpStatusCode.InternalServerError)
         }
     }
     install(CORS) {

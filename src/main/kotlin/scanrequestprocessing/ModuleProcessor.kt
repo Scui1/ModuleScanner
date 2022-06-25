@@ -2,14 +2,17 @@ import actions.ActionException
 import actions.ActionManager
 import json.PatternType
 import json.scanresult.ScanError
+import org.slf4j.LoggerFactory
 import pefile.PEFile
+
+private val logger = LoggerFactory.getLogger("ModuleProcessor")
 
 fun processModule(peFile: PEFile, moduleConfig: json.scanrequest.Module, output: json.scanresult.ScanResult) {
     patternLoop@ for (pattern in moduleConfig.patterns) {
 
         if (pattern.actions.isEmpty()) {
             output.errors.add(ScanError(pattern.type, pattern.name, "No actions are defined."))
-            println("Failed to find pattern for ${pattern.name} because no actions are defined.")
+            logger.trace("Failed to find pattern for ${pattern.name} because no actions are defined.")
             continue
         }
 
@@ -20,16 +23,16 @@ fun processModule(peFile: PEFile, moduleConfig: json.scanrequest.Module, output:
                 currentResult = ActionManager.executeAction(action, peFile, currentResult)
             } catch (exception: ActionException) {
                 output.errors.add(ScanError(pattern.type, pattern.name, "Action ${i + 1} (${action.type}) failed. ${exception.message}"))
-                println("Failed to find pattern for ${pattern.name} because ${action.type} failed.")
+                logger.trace("Failed to find pattern for ${pattern.name} because ${action.type} failed.")
                 continue@patternLoop
             }
         }
 
         if (pattern.type == PatternType.FUNCTION || pattern.type == PatternType.RETURN_ADDRESS) {
             currentResult = peFile.convertRawOffsetToVirtualOffset(currentResult, ".text")
-            println("${pattern.type} ${pattern.name} found: 0x${currentResult.toString(16)}")
+            logger.trace("${pattern.type} ${pattern.name} found: 0x${currentResult.toString(16)}")
         } else {
-            println("${pattern.type} ${pattern.name} found: $currentResult")
+            logger.trace("${pattern.type} ${pattern.name} found: $currentResult")
         }
 
         when (pattern.type) {

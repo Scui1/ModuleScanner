@@ -1,7 +1,10 @@
 package pefile
 
+import org.slf4j.LoggerFactory
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
+
+private val logger = LoggerFactory.getLogger("PEFile")
 
 class PEFile(val bytes: ByteArray) {
     private val sections = getModuleSections()
@@ -21,7 +24,7 @@ class PEFile(val bytes: ByteArray) {
         // fix difference between virtual and raw address, as we need the offset to the pattern in memory
         val textSection = getSectionByName(sectionName)
         if (textSection == null) {
-            println("Failed to find .text section, this shouldn't happen")
+            logger.info("Failed to find .text section, this shouldn't happen")
             return 0
         }
 
