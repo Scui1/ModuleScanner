@@ -1,14 +1,10 @@
 import json.scanrequest.ScanRequest
-import scanrequestprocessing.ModuleReader
+import json.scanresult.ScanResult
 
-fun processScanRequest(scanRequest: ScanRequest): json.scanresult.ScanResult {
-    val scanResult = json.scanresult.ScanResult()
+fun processScanRequest(scanRequest: ScanRequest): ScanResult {
+    val scanResult = ScanResult()
 
-    for (module in scanRequest.modules) {
-        val peFile = ModuleReader.readModulePEFile(module.name)
-        if (peFile != null)
-            processModule(peFile, module, scanResult)
-    }
+    scanRequest.modules.forEach { module -> processModule(module, scanResult) }
 
     return scanResult
 }

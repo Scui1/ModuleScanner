@@ -1,45 +1,11 @@
-import actions.ActionException
-import actions.ActionManager
-import json.PatternType
-import json.scanresult.ScanError
-import org.slf4j.LoggerFactory
-import pefile.PEFile
+import json.scanrequest.Module
+import json.scanresult.ScanResult
+import scanrequestprocessing.ModuleReader
+import scanrequestprocessing.processPattern
 
-private val logger = LoggerFactory.getLogger("ModuleProcessor")
+fun processModule(moduleConfig: Module, output: ScanResult) {
+    val peFile = ModuleReader.readModulePEFile(moduleConfig.name)
+        ?: return
 
-fun processModule(peFile: PEFile, moduleConfig: json.scanrequest.Module, output: json.scanresult.ScanResult) {
-    patternLoop@ for (pattern in moduleConfig.patterns) {
-
-        if (pattern.actions.isEmpty()) {
-            output.errors.add(ScanError(pattern.type, pattern.name, "No actions are defined."))
-            logger.trace("Failed to find pattern for ${pattern.name} because no actions are defined.")
-            continue
-        }
-
-        var currentResult = 0
-        for (i in pattern.actions.indices) {
-            val action = pattern.actions[i]
-            try {
-                currentResult = ActionManager.executeAction(action, peFile, currentResult)
-            } catch (exception: ActionException) {
-                output.errors.add(ScanError(pattern.type, pattern.name, "Action ${i + 1} (${action.type}) failed. ${exception.message}"))
-                logger.trace("Failed to find pattern for ${pattern.name} because ${action.type} failed.")
-                continue@patternLoop
-            }
-        }
-
-        if (pattern.type == PatternType.FUNCTION || pattern.type == PatternType.RETURN_ADDRESS) {
-            currentResult = peFile.convertRawOffsetToVirtualOffset(currentResult, ".text")
-            logger.trace("${pattern.type} ${pattern.name} found: 0x${currentResult.toString(16)}")
-        } else {
-            logger.trace("${pattern.type} ${pattern.name} found: $currentResult")
-        }
-
-        when (pattern.type) {
-            PatternType.FUNCTION -> output.function[pattern.name] = currentResult
-            PatternType.RETURN_ADDRESS -> output.returnaddress[pattern.name] = currentResult
-            PatternType.INDEX -> output.vfunc[pattern.name] = currentResult
-            PatternType.OFFSET -> output.offset[pattern.name] = currentResult
-        }
-    }
+    moduleConfig.patterns.forEach { pattern -> processPattern(peFile, pattern, output) }
 }
