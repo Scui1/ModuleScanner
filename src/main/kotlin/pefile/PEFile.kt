@@ -1,8 +1,6 @@
 package pefile
 
 import org.slf4j.LoggerFactory
-import java.nio.ByteBuffer
-import java.nio.ByteOrder
 
 private val logger = LoggerFactory.getLogger("PEFile")
 
@@ -32,6 +30,14 @@ class PEFile(val bytes: ByteArray) {
         return offset + virtualRawDifference
     }
 
+    private fun convertLittleEndianByteArrayToInt(byteArray: ByteArray): Int  {
+        var result = 0
+        byteArray.reversedArray().forEach { byte ->
+            result = (result shl 8) + (byte.toUByte() and 0xFF.toUByte()).toInt()
+        }
+        return result
+    }
+
     fun getImageBase(): Int {
         return readInt(getPeHeaderOffset() + 0x34)
     }
@@ -57,23 +63,16 @@ class PEFile(val bytes: ByteArray) {
     }
 
     fun readIntWithSize(base: Int, size: Int): Int {
-        return read(base, size).int
+        return convertLittleEndianByteArrayToInt(read(base, size))
     }
 
-    private fun readShort(base: Int): Int {
-        return read(base, 2).short.toInt()
-    }
-
+    private fun readShort(base: Int): Int = readIntWithSize(base, 2)
     private fun readString(base: Int, size: Int): String {
-        return String(read(base, size).array()).trim { it <= ' ' } // remove null characters
+        return String(read(base, size)).trim { it <= ' ' } // remove null characters
     }
 
-    private fun read(base: Int, size: Int): ByteBuffer {
-        val targetBytes = bytes.copyOfRange(base, base + size)
-
-        val byteBuffer = ByteBuffer.wrap(targetBytes)
-        byteBuffer.order(ByteOrder.LITTLE_ENDIAN)
-        return byteBuffer
+    private fun read(base: Int, size: Int): ByteArray {
+        return bytes.copyOfRange(base, base + size)
     }
 
     private fun getModuleSections(): List<Section> {
