@@ -35,9 +35,7 @@ object PatternSearch : ExecutableAction {
         val foundAddress = if (currentOffset == 0)
             searchPattern(peFile, textSection, patternBytes, wantedOccurrences)
         else {
-            // when searching up, we just start from current address - maxbytes and search from there on
-            val startOffset = if (searchDirection.equals("UP", true)) -maxBytesToSearch else 0
-            searchPattern(peFile, textSection, patternBytes, wantedOccurrences, currentOffset + startOffset, maxBytesToSearch)
+            searchPattern(peFile, textSection, patternBytes, wantedOccurrences, currentOffset, maxBytesToSearch, searchDirection.equals("UP", true))
         }
 
         return when (foundAddress) {
