@@ -14,6 +14,10 @@ class PEFile(val bytes: ByteArray) {
         return str == "MZ" && machineType == 0x14C // Intel 386
     }
 
+    private fun getSectionByVirtualAddress(address: Int): Section? {
+        return sections.find { address >= it.virtualBase && address <= it.virtualBase + it.size }
+    }
+
     fun getSectionByName(name: String): Section? {
         return sections.find { it.name == name }
     }
@@ -28,6 +32,17 @@ class PEFile(val bytes: ByteArray) {
 
         val virtualRawDifference = textSection.virtualBase - textSection.rawBase
         return offset + virtualRawDifference
+    }
+
+    fun convertVirtualOffsetToRawOffset(offset: Int): Int  {
+        val section = getSectionByVirtualAddress(offset)
+        if (section == null) {
+            logger.info("Couldn't find section for address 0x${offset.toString(16)}")
+            return 0
+        }
+
+        val rawVirtualDifference = section.rawBase - section.virtualBase
+        return offset + rawVirtualDifference
     }
 
     private fun convertLittleEndianByteArrayToInt(byteArray: ByteArray): Int  {
