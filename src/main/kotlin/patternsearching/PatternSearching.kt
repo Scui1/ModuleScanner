@@ -11,31 +11,27 @@ fun searchPattern(
     val endAddress = if (backwards) start - maxBytesToSearch else start + maxBytesToSearch
 
     var occurrences = 0
-    var foundAddress = 0
     var bytesMatched = 0
     for (i in start towards endAddress) {
-        val currentByte = peFile.bytes[i].toUByte()
-        if (bytePattern[bytesMatched].matches(currentByte)) {
-            if (bytesMatched == 0)
-                foundAddress = calcFoundAddress(i, bytePattern.size, backwards)
 
+        if (currentByteMatchesPatternByte(peFile, i, bytePattern[bytesMatched]))
             ++bytesMatched
-        } else {
-            bytesMatched = 0
-            foundAddress = 0
+        else {
+            // if the current byte does not match and we had already more than 1 bytes matched, we need to recheck if the current byte is the start of the pattern
+            bytesMatched = if (bytesMatched > 0)
+                if (currentByteMatchesPatternByte(peFile, i, bytePattern[0])) 1 else 0
+            else
+                0
         }
 
         if (bytesMatched >= bytePattern.size) {
             ++occurrences
 
-            if (occurrences < wantedOccurrences) {
+            if (occurrences < wantedOccurrences)
                 bytesMatched = 0
-                foundAddress = 0
-            }
+            else
+                return calcFoundAddress(i, bytePattern.size, backwards)
         }
-
-        if (occurrences >= wantedOccurrences)
-            return foundAddress
     }
 
     return 0
@@ -43,10 +39,14 @@ fun searchPattern(
 
 private fun calcFoundAddress(currentAddress: Int, patternLength: Int, backwards: Boolean): Int {
     return if (backwards) {
-        currentAddress - (patternLength - 1)
-    } else {
         currentAddress
+    } else {
+        currentAddress - (patternLength - 1)
     }
+}
+
+private fun currentByteMatchesPatternByte(peFile: PEFile, byteIndex: Int, patternByte: PatternByte): Boolean {
+    return patternByte.matches(peFile.bytes[byteIndex].toUByte())
 }
 
 // https://stackoverflow.com/a/52986053
