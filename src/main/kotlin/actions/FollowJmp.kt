@@ -6,8 +6,13 @@ object FollowJmp : ExecutableAction {
     override val name = "FollowJmp"
 
     override fun execute(peFile: PEFile, currentOffset: Int, arguments: List<String>): Int {
-        val jmpInstruction = peFile.bytes[currentOffset].toUByte()
-        val isShortJmp = jmpInstruction == 0xEB.toUByte()
+        val currentInstruction = peFile.bytes[currentOffset].toUByte()
+
+        val isShortJmp = when(currentInstruction) {
+            0xEB.toUByte() -> true
+            0xE8.toUByte() -> false
+            else -> throw ActionException("Instruction 0x${currentInstruction.toString(16)} is not a jmp.")
+        }
 
         // relative address is only 1 byte if it's a short jmp
         val relAddress = if (isShortJmp)
