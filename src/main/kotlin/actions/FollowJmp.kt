@@ -22,6 +22,10 @@ object FollowJmp : ExecutableAction {
 
         val instructionSize = if (isShortJmp) 2 else 5
 
-        return currentOffset + relAddress + instructionSize
+        val result = currentOffset + relAddress + instructionSize
+        return when {
+            result < peFile.bytes.size && result >= 0 -> result
+            else -> throw ActionException("Jmp redirects outside module bounds. Perhaps it isn't a jmp instruction?")
+        }
     }
 }
