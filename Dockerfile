@@ -1,4 +1,4 @@
-FROM gradle:jdk17-alpine AS build
+FROM gradle:jdk17 AS build
 COPY --chown=gradle:gradle build.gradle.kts gradle.properties settings.gradle.kts /home/gradle/src/
 RUN mkdir /home/gradle/src/src
 COPY src /home/gradle/src/src

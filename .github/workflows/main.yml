@@ -13,6 +13,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       -
+        name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+      -
         name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
       -
@@ -25,5 +28,6 @@ jobs:
         name: Build and push
         uses: docker/build-push-action@v3
         with:
+          platforms: "linux/arm64,linux/amd64"
           push: true
           tags: scui2/modulescanner:latest
