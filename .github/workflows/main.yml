@@ -28,7 +28,6 @@ jobs:
         name: Build and push
         uses: docker/build-push-action@v3
         with:
-          #platforms: "linux/arm64,linux/amd64"
-          platforms: "linux/amd64"
+          platforms: "linux/arm64,linux/amd64"
           push: true
           tags: scui2/modulescanner:latest
