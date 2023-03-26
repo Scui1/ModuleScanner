@@ -15,8 +15,10 @@ fun Application.configureRouting() {
 
             val result = processScanRequest(config)
 
-            call.response.status(HttpStatusCode.OK)
-            call.respond(result)
+            call.respond(HttpStatusCode.OK, result)
+        }
+        get("/alive") {
+            call.respond(HttpStatusCode.OK, true)
         }
     }
 }
