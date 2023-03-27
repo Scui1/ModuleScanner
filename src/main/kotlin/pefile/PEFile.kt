@@ -13,15 +13,6 @@ class PEFile(val bytes: ByteArray) {
     private val architecture = constructArchitecture()
     private val sections = getModuleSections()
 
-    private fun hasValidDosHeader(): Boolean {
-        val str = reader.readString(0, 2)
-        return str == "MZ"
-    }
-
-    private fun getSectionByVirtualAddress(address: Int): Section? {
-        return sections.find { address >= it.virtualBase && address <= it.virtualBase + it.size }
-    }
-
     fun getSectionByName(name: String): Section? {
         return sections.find { it.name == name }
     }
@@ -47,6 +38,14 @@ class PEFile(val bytes: ByteArray) {
 
         val rawVirtualDifference = section.rawBase - section.virtualBase
         return offset + rawVirtualDifference
+    }
+
+    fun readInt(base: Int): Int {
+        return reader.readInt(base)
+    }
+
+    fun readIntWithSize(base: Int, size: Int): Int {
+        return reader.readIntWithSize(base, size)
     }
 
     fun getImageBase(): Int {
@@ -81,12 +80,13 @@ class PEFile(val bytes: ByteArray) {
         return readInt(getPeHeader() + architecture.getNumberOfRvaAndSizesOffset())
     }
 
-    fun readInt(base: Int): Int {
-        return reader.readInt(base)
+    private fun hasValidDosHeader(): Boolean {
+        val str = reader.readString(0, 2)
+        return str == "MZ"
     }
 
-    fun readIntWithSize(base: Int, size: Int): Int {
-        return reader.readIntWithSize(base, size)
+    private fun getSectionByVirtualAddress(address: Int): Section? {
+        return sections.find { address >= it.virtualBase && address <= it.virtualBase + it.size }
     }
 
     private fun getModuleSections(): List<Section> {
