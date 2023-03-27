@@ -10,6 +10,7 @@ class PEFile(val bytes: ByteArray) {
         if (!hasValidDosHeader())
             throw InvalidPEFileException("DOS Header is invalid")
     }
+    val machineType = constructMachineType()
     private val architecture = constructArchitecture()
     private val sections = getModuleSections()
 
@@ -53,15 +54,16 @@ class PEFile(val bytes: ByteArray) {
     }
 
     private fun constructArchitecture(): IPEFileArchitecture {
-        return when(getMachineType()) {
-            0x14C -> PEFile32Architecture()
-            0x8664 -> PEFile64Architecture()
-            else -> throw InvalidPEFileException("Not a valid machine architecture type")
+        return when(machineType) {
+             MachineType.INTEL386 -> PEFile32Architecture()
+             MachineType.AMD64 -> PEFile64Architecture()
         }
     }
 
-    private fun getMachineType(): Int {
-        return reader.readShort(getPeHeader() + 4)
+    private fun constructMachineType(): MachineType {
+        val readValue = reader.readShort(getPeHeader() + 4)
+        return MachineType.fromInt(readValue)
+            ?: throw InvalidPEFileException("Not a valid machine architecture type")
     }
 
     private fun getPeHeader(): Int {
