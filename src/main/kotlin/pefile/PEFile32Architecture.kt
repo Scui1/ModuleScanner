@@ -13,4 +13,8 @@ class PEFile32Architecture() : IPEFileArchitecture {
     override fun getNumberOfRvaAndSizesOffset(): Int {
         return 0x74
     }
+
+    override fun getVTableEntrySize(): Int {
+        return 4
+    }
 }

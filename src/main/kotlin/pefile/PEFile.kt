@@ -10,8 +10,8 @@ class PEFile(val bytes: ByteArray) {
         if (!hasValidDosHeader())
             throw InvalidPEFileException("DOS Header is invalid")
     }
-    val machineType = constructMachineType()
-    private val architecture = constructArchitecture()
+    private val machineType = constructMachineType()
+    val architecture = constructArchitecture()
     private val sections = getModuleSections()
 
     fun getSectionByName(name: String): Section? {
