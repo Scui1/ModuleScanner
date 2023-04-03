@@ -5,4 +5,7 @@ interface IPEFileArchitecture {
     fun getDataDirectoriesOffset(): Int
     fun getNumberOfRvaAndSizesOffset(): Int
     fun getVTableEntrySize(): Int
+
+    fun is64Bit(): Boolean
+    fun is32Bit(): Boolean
 }

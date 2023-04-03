@@ -17,4 +17,12 @@ class PEFile32Architecture() : IPEFileArchitecture {
     override fun getVTableEntrySize(): Int {
         return 4
     }
+
+    override fun is64Bit(): Boolean {
+        return false
+    }
+
+    override fun is32Bit(): Boolean {
+        return true
+    }
 }
