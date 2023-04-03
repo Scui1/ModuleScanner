@@ -36,7 +36,7 @@ object ModuleReader {
             return null
         }
 
-        val peFile =  try {
+        val peFile = try {
             PEFile(moduleBytes)
         } catch (exception: InvalidPEFileException) {
             logger.error("Module $moduleName is not a valid pe file, module won't be processed: ${exception.message}")
