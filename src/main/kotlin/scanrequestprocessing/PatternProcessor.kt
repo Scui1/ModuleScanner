@@ -38,8 +38,8 @@ fun processPattern(peFile: PEFile, pattern: Pattern, output: ScanResult) {
     }
 
     when (pattern.type) {
-        PatternType.FUNCTION -> output.function[pattern.name] = currentResult
-        PatternType.RETURN_ADDRESS -> output.returnaddress[pattern.name] = currentResult
+        PatternType.FUNCTION -> output.getFunctionsForModule(peFile.name)[pattern.name] = currentResult
+        PatternType.RETURN_ADDRESS -> output.getReturnAddressesForModule(peFile.name)[pattern.name] = currentResult
         PatternType.INDEX -> output.vfunc[pattern.name] = currentResult
         PatternType.OFFSET -> output.offset[pattern.name] = currentResult
     }

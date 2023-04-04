@@ -23,9 +23,8 @@ object ModuleReader {
     fun readModulePEFile(moduleName: String): PEFile? {
         val inputFile = File(moduleDirectory).resolve(moduleName)
 
-        val moduleBytes: ByteArray
-        try {
-            moduleBytes = inputFile.readBytes()
+        val moduleBytes = try {
+            inputFile.readBytes()
         } catch (e: IOException) {
             logger.error("Module $moduleName couldn't be read: ${e.message}")
             return null
@@ -37,7 +36,7 @@ object ModuleReader {
         }
 
         val peFile = try {
-            PEFile(moduleBytes)
+            PEFile(moduleBytes, moduleName)
         } catch (exception: InvalidPEFileException) {
             logger.error("Module $moduleName is not a valid pe file, module won't be processed: ${exception.message}")
             return null

@@ -4,7 +4,7 @@ import org.slf4j.LoggerFactory
 
 private val logger = LoggerFactory.getLogger("PEFile")
 
-class PEFile(val bytes: ByteArray) {
+class PEFile(val bytes: ByteArray, val name: String) {
     private val reader = PEFileReader(bytes)
     init {
         if (!hasValidDosHeader())
