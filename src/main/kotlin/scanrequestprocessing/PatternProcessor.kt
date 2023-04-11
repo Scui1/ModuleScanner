@@ -13,7 +13,7 @@ private val logger = LoggerFactory.getLogger("PatternProcessor")
 
 fun processPattern(peFile: PEFile, pattern: Pattern, output: ScanResult) {
     if (pattern.actions.isEmpty()) {
-        output.errors.add(ScanError(pattern.type, pattern.name, "No actions are defined."))
+        output.errors.add(ScanError(peFile.name, pattern.type, pattern.name, "No actions are defined."))
         logger.trace("Failed to find pattern for ${pattern.name} because no actions are defined.")
         return
     }
@@ -24,7 +24,7 @@ fun processPattern(peFile: PEFile, pattern: Pattern, output: ScanResult) {
         try {
             currentResult = ActionManager.executeAction(action, peFile, currentResult)
         } catch (exception: ActionException) {
-            output.errors.add(ScanError(pattern.type, pattern.name, "Action ${i + 1} (${action.type}) failed. ${exception.message}"))
+            output.errors.add(ScanError(peFile.name, pattern.type, pattern.name, "Action ${i + 1} (${action.type}) failed. ${exception.message}"))
             logger.trace("Failed to find pattern for ${pattern.name} because ${action.type} failed.")
             return
         }
