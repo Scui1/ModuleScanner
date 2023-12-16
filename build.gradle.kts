@@ -15,6 +15,10 @@ application {
     mainClass.set("io.ktor.server.cio.EngineMain")
 }
 
+tasks.test {
+    useJUnitPlatform()
+}
+
 repositories {
     mavenCentral()
 }
@@ -27,6 +31,7 @@ dependencies {
     implementation("io.ktor:ktor-server-content-negotiation-jvm:$ktorVersion")
     implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:$ktorVersion")
     implementation("ch.qos.logback:logback-classic:1.4.6")
+    testImplementation(kotlin("test"))
 }
 
 tasks.withType<ShadowJar> {
