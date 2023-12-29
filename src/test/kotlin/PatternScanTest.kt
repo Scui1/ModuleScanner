@@ -3,10 +3,20 @@ import json.scanrequest.Action
 import json.scanrequest.Module
 import json.scanrequest.Pattern
 import json.scanrequest.ScanRequest
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 import org.junit.jupiter.api.BeforeEach
 import scanrequestprocessing.ModuleReader
+import java.nio.charset.Charset
+import java.nio.charset.StandardCharsets
+import kotlin.system.measureTimeMillis
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
+import kotlin.test.fail
+import kotlin.time.Duration.Companion.seconds
+import kotlin.time.ExperimentalTime
+import kotlin.time.measureTime
 
 class PatternScanTest {
 
@@ -46,5 +56,21 @@ class PatternScanTest {
 
         assertEquals(9091, result.function[X86_MODULE_NAME]?.get(FUNCTION_NAME))
         assertEquals(27024, result.function[X64_MODULE_NAME]?.get(FUNCTION_NAME))
+    }
+
+    @OptIn(ExperimentalTime::class)
+    @Test
+    fun performanceTest() {
+        val scanRequestText = PatternScanTest::class.java.getResource("clientDllScanRequest.json")?.readText(StandardCharsets.UTF_8) ?: fail("Couldn't get clientDllScanRequest")
+        val scanRequest = Json.decodeFromString<ScanRequest>(scanRequestText)
+
+
+        val resultTime = measureTime {
+            processScanRequest(scanRequest)
+        }
+
+        assertTrue(resultTime < 4.seconds)
+
+        System.out.println("Took: $resultTime")
     }
 }
