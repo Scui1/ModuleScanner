@@ -21,9 +21,19 @@ tasks.test {
 
 repositories {
     mavenCentral()
+    maven {
+        group
+        name = "GitHubPackages"
+        url = uri("https://maven.pkg.github.com/Scui1/KotlinPEFile")
+        credentials {
+            username = System.getenv("GITHUB_USERNAME")
+            password = System.getenv("GITHUB_TOKEN")
+        }
+    }
 }
 
 dependencies {
+    implementation("de.scui:kotlin-pefile:1.0")
     implementation("io.ktor:ktor-server-core-jvm:$ktorVersion")
     implementation("io.ktor:ktor-server-cors-jvm:$ktorVersion")
     implementation("io.ktor:ktor-server-cio-jvm:$ktorVersion")

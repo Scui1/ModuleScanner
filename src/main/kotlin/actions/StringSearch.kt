@@ -61,7 +61,7 @@ object StringSearch : ExecutableAction {
 
         var occurrences = 0
         // typical instruction we're looking for looks like this: 4? 8D ?? AA BB CC DD
-        for (i in section.rawBase until section.rawBase + section.size) {
+        for (i in section.rawBase until section.rawBase + section.rawSize) {
             val currentByte = peFile.bytes[i].toUByte()
             if (currentByte != 0x8D.toUByte())
                 continue

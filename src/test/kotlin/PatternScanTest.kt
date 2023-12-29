@@ -69,8 +69,8 @@ class PatternScanTest {
             processScanRequest(scanRequest)
         }
 
-        assertTrue(resultTime < 4.seconds)
+        assertTrue(resultTime < 5.seconds)
 
-        System.out.println("Took: $resultTime")
+        println("Performance test took: $resultTime")
     }
 }

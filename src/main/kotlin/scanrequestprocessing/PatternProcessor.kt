@@ -11,9 +11,9 @@ import pefile.PEFile
 
 private val logger = LoggerFactory.getLogger("PatternProcessor")
 
-fun processPattern(peFile: PEFile, pattern: Pattern, output: ScanResult) {
+fun processPattern(peFile: PEFile, moduleName: String, pattern: Pattern, output: ScanResult) {
     if (pattern.actions.isEmpty()) {
-        output.errors.add(ScanError(peFile.name, pattern.type, pattern.name, "No actions are defined."))
+        output.errors.add(ScanError(moduleName, pattern.type, pattern.name, "No actions are defined."))
         logger.trace("Failed to find pattern for ${pattern.name} because no actions are defined.")
         return
     }
@@ -24,7 +24,7 @@ fun processPattern(peFile: PEFile, pattern: Pattern, output: ScanResult) {
         try {
             currentResult = ActionManager.executeAction(action, peFile, currentResult)
         } catch (exception: ActionException) {
-            output.errors.add(ScanError(peFile.name, pattern.type, pattern.name, "Action ${i + 1} (${action.type}) failed. ${exception.message}"))
+            output.errors.add(ScanError(moduleName, pattern.type, pattern.name, "Action ${i + 1} (${action.type}) failed. ${exception.message}"))
             logger.trace("Failed to find pattern for ${pattern.name} because ${action.type} failed.")
             return
         }
@@ -38,8 +38,8 @@ fun processPattern(peFile: PEFile, pattern: Pattern, output: ScanResult) {
     }
 
     when (pattern.type) {
-        PatternType.FUNCTION -> output.getFunctionsForModule(peFile.name)[pattern.name] = currentResult
-        PatternType.RETURN_ADDRESS -> output.getReturnAddressesForModule(peFile.name)[pattern.name] = currentResult
+        PatternType.FUNCTION -> output.getFunctionsForModule(moduleName)[pattern.name] = currentResult
+        PatternType.RETURN_ADDRESS -> output.getReturnAddressesForModule(moduleName)[pattern.name] = currentResult
         PatternType.INDEX -> output.vfunc[pattern.name] = currentResult
         PatternType.OFFSET -> output.offset[pattern.name] = currentResult
     }
