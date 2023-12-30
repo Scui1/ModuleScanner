@@ -1,6 +1,6 @@
 FROM gradle:jdk17 AS build
-RUN echo $GITHUB_USERNAME
-RUN echo $GITHUB_TOKEN
+ARG GITHUB_USERNAME
+ARG GITHUB_TOKEN
 COPY --chown=gradle:gradle build.gradle.kts gradle.properties settings.gradle.kts /home/gradle/src/
 RUN mkdir /home/gradle/src/src
 COPY src /home/gradle/src/src
