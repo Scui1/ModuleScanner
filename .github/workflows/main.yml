@@ -33,4 +33,4 @@ jobs:
           tags: scui2/modulescanner:latest
           build-args: |
             GITHUB_USERNAME=${{ github.actor }}
-            GITHUB_TOKEN=${GITHUB_TOKEN}
+            GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
