@@ -11,6 +11,8 @@ on:
 jobs:
   docker:
     runs-on: ubuntu-latest
+    env:
+      GITHUB_USERNAME: ${{ github.actor }}
     steps:
       -
         name: Set up QEMU
