@@ -15,6 +15,9 @@ jobs:
       GITHUB_USERNAME: ${{ github.actor }}
     steps:
       -
+        name: echo shit
+        run: echo "$GITHUB_USERNAME"
+      -
         name: Set up QEMU
         uses: docker/setup-qemu-action@v1
       -
@@ -33,3 +36,5 @@ jobs:
           platforms: "linux/arm64,linux/amd64"
           push: true
           tags: scui2/modulescanner:latest
+        env:
+          GITHUB_USERNAME: ${{ github.actor }}
