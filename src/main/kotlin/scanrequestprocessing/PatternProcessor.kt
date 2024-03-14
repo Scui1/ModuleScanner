@@ -2,6 +2,7 @@ package scanrequestprocessing
 
 import actions.ActionException
 import actions.ActionManager
+import actions.Deref
 import json.PatternType
 import json.scanrequest.Pattern
 import json.scanresult.ScanError
@@ -30,7 +31,7 @@ fun processPattern(peFile: PEFile, moduleName: String, pattern: Pattern, output:
         }
     }
 
-    if (pattern.type == PatternType.FUNCTION || pattern.type == PatternType.ADDRESS) {
+    if (pattern.type == PatternType.FUNCTION || (pattern.type == PatternType.ADDRESS && pattern.actions.last().type != Deref.name)) {
         currentResult = peFile.convertRawOffsetToVirtualOffset(currentResult)
         logger.trace("${pattern.type} ${pattern.name} found: 0x${currentResult.toString(16)}")
     } else {
