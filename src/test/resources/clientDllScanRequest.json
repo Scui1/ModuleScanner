@@ -9760,7 +9760,7 @@
             }
           ],
           "name": "sv_cheats",
-          "type": "ReturnAddress"
+          "type": "Address"
         },
         {
           "actions": [
@@ -9781,7 +9781,7 @@
             }
           ],
           "name": "ListLeavesInBoxRet",
-          "type": "ReturnAddress"
+          "type": "Address"
         },
         {
           "actions": [
@@ -9796,7 +9796,7 @@
             }
           ],
           "name": "IsHLTVSetupVel",
-          "type": "ReturnAddress"
+          "type": "Address"
         },
         {
           "actions": [
@@ -9811,7 +9811,7 @@
             }
           ],
           "name": "FindMaterialScope",
-          "type": "ReturnAddress"
+          "type": "Address"
         },
         {
           "actions": [
@@ -9834,7 +9834,7 @@
             }
           ],
           "name": "FindMaterialBlur",
-          "type": "ReturnAddress"
+          "type": "Address"
         },
         {
           "actions": [
@@ -9863,7 +9863,7 @@
             }
           ],
           "name": "IsConnectedRet",
-          "type": "ReturnAddress"
+          "type": "Address"
         },
         {
           "actions": [
@@ -9886,7 +9886,7 @@
             }
           ],
           "name": "DrawColoredText",
-          "type": "ReturnAddress"
+          "type": "Address"
         },
         {
           "actions": [
@@ -9909,7 +9909,7 @@
             }
           ],
           "name": "weapon_debug_spread_show",
-          "type": "ReturnAddress"
+          "type": "Address"
         },
         {
           "actions": [
@@ -9932,7 +9932,7 @@
             }
           ],
           "name": "GetModelNameRet",
-          "type": "ReturnAddress"
+          "type": "Address"
         },
         {
           "actions": [
@@ -9947,7 +9947,7 @@
             }
           ],
           "name": "IsPlayingDemoRet",
-          "type": "ReturnAddress"
+          "type": "Address"
         },
         {
           "actions": [
@@ -9976,7 +9976,7 @@
             }
           ],
           "name": "GetScreenSizeW",
-          "type": "ReturnAddress"
+          "type": "Address"
         },
         {
           "actions": [
@@ -9999,7 +9999,7 @@
             }
           ],
           "name": "GetScreenSizeH",
-          "type": "ReturnAddress"
+          "type": "Address"
         },
         {
           "actions": [
@@ -10014,7 +10014,7 @@
             }
           ],
           "name": "GetNetChannelInfoRet",
-          "type": "ReturnAddress"
+          "type": "Address"
         },
         {
           "actions": [
@@ -10029,7 +10029,7 @@
             }
           ],
           "name": "IsSpectatorRet",
-          "type": "ReturnAddress"
+          "type": "Address"
         },
         {
           "actions": [
@@ -10050,7 +10050,7 @@
             }
           ],
           "name": "ShouldDrawLocalPlayerRet",
-          "type": "ReturnAddress"
+          "type": "Address"
         },
         {
           "actions": [
@@ -10071,7 +10071,7 @@
             }
           ],
           "name": "GetDemoPlaybackParametersRet",
-          "type": "ReturnAddress"
+          "type": "Address"
         },
         {
           "actions": [

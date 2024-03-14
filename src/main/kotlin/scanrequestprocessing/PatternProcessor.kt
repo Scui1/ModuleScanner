@@ -30,8 +30,8 @@ fun processPattern(peFile: PEFile, moduleName: String, pattern: Pattern, output:
         }
     }
 
-    if (pattern.type == PatternType.FUNCTION || pattern.type == PatternType.RETURN_ADDRESS) {
-        currentResult = peFile.convertRawOffsetToVirtualOffset(currentResult, ".text")
+    if (pattern.type == PatternType.FUNCTION || pattern.type == PatternType.ADDRESS) {
+        currentResult = peFile.convertRawOffsetToVirtualOffset(currentResult)
         logger.trace("${pattern.type} ${pattern.name} found: 0x${currentResult.toString(16)}")
     } else {
         logger.trace("${pattern.type} ${pattern.name} found: $currentResult")
@@ -39,7 +39,7 @@ fun processPattern(peFile: PEFile, moduleName: String, pattern: Pattern, output:
 
     when (pattern.type) {
         PatternType.FUNCTION -> output.getFunctionsForModule(moduleName)[pattern.name] = currentResult
-        PatternType.RETURN_ADDRESS -> output.getReturnAddressesForModule(moduleName)[pattern.name] = currentResult
+        PatternType.ADDRESS -> output.getAddressesForModule(moduleName)[pattern.name] = currentResult
         PatternType.INDEX -> output.vfunc[pattern.name] = currentResult
         PatternType.OFFSET -> output.offset[pattern.name] = currentResult
     }
