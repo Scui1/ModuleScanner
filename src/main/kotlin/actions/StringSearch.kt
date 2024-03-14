@@ -35,7 +35,7 @@ object StringSearch : ExecutableAction {
 
             searchPattern(peFile, textSection, patternBytes, wantedOccurrences)
         } else {
-            findXrefsForString(peFile, textSection, rawRdataAddress, wantedOccurrences)
+            findXrefsForString(peFile, textSection, peFile.convertRawOffsetToVirtualOffset(rawRdataAddress, ".rdata") , wantedOccurrences)
         }
 
         return when (foundAddress) {
@@ -57,21 +57,21 @@ object StringSearch : ExecutableAction {
     }
 
     private fun findXrefsForString(peFile: PEFile, section: Section, stringAddress: Int, wantedOccurrences: Int): Int {
-        val differenceToVirtualAddress = section.rawBase - section.virtualBase
+        val differenceToVirtualAddress = section.virtualBase - section.rawBase
 
         var occurrences = 0
         // typical instruction we're looking for looks like this: 4? 8D ?? AA BB CC DD
         for (i in section.rawBase until section.rawBase + section.rawSize) {
-            val currentByte = peFile.bytes[i].toUByte()
-            if (currentByte != 0x8D.toUByte())
+            val currentByte = peFile.bytes[i].toUByte().toUInt()
+            if ((currentByte and 0xF0u) != 0x40u || peFile.bytes[i + 1].toUByte().toUInt() != 0x8Du)
                 continue
 
-            val relativeAddress = peFile.readInt(i + 2)
-            val resolvedAddress = i + 6 + differenceToVirtualAddress + relativeAddress
+            val relativeAddress = peFile.readInt(i + 3)
+            val resolvedAddress = i + 7 + differenceToVirtualAddress + relativeAddress
             if (resolvedAddress == stringAddress) {
                 occurrences++
                 if (occurrences == wantedOccurrences)
-                    return i - 1 // start of instruction
+                    return i // start of instruction
             }
         }
 
