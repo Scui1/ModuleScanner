@@ -5,18 +5,19 @@ import actions.ActionManager
 import actions.Deref
 import json.PatternType
 import json.scanrequest.Pattern
-import json.scanresult.ScanError
-import json.scanresult.ScanResult
 import org.slf4j.LoggerFactory
 import pefile.PEFile
 
 private val logger = LoggerFactory.getLogger("PatternProcessor")
 
-fun processPattern(peFile: PEFile, moduleName: String, pattern: Pattern, output: ScanResult) {
+sealed class PatternResult {
+    data class Success(val value: Int) : PatternResult()
+    data class Error(val message: String) : PatternResult()
+}
+
+fun processPattern(pattern: Pattern, peFile: PEFile): PatternResult {
     if (pattern.actions.isEmpty()) {
-        output.errors.add(ScanError(moduleName, pattern.type, pattern.name, "No actions are defined."))
-        logger.trace("Failed to find pattern for ${pattern.name} because no actions are defined.")
-        return
+        return PatternResult.Error("No actions are defined.")
     }
 
     var currentResult = 0
@@ -25,23 +26,17 @@ fun processPattern(peFile: PEFile, moduleName: String, pattern: Pattern, output:
         try {
             currentResult = ActionManager.executeAction(action, peFile, currentResult)
         } catch (exception: ActionException) {
-            output.errors.add(ScanError(moduleName, pattern.type, pattern.name, "Action ${i + 1} (${action.type}) failed. ${exception.message}"))
-            logger.trace("Failed to find pattern for ${pattern.name} because ${action.type} failed.")
-            return
+            return PatternResult.Error("Action ${i + 1} (${action.type}) failed. ${exception.message}")
         }
     }
 
-    if (pattern.type == PatternType.FUNCTION || (pattern.type == PatternType.ADDRESS && pattern.actions.last().type != Deref.name)) {
+    // TODO: This is ghetto atm, introduce some custom result type that specifies if result is virtual or raw, so we can get rid of this
+    if ((pattern.type == PatternType.FUNCTION || pattern.type == PatternType.ADDRESS) && pattern.actions.last().type != Deref.name) {
         currentResult = peFile.convertRawOffsetToVirtualOffset(currentResult)
         logger.trace("${pattern.type} ${pattern.name} found: 0x${currentResult.toString(16)}")
     } else {
         logger.trace("${pattern.type} ${pattern.name} found: $currentResult")
     }
 
-    when (pattern.type) {
-        PatternType.FUNCTION -> output.getFunctionsForModule(moduleName)[pattern.name] = currentResult
-        PatternType.ADDRESS -> output.getAddressesForModule(moduleName)[pattern.name] = currentResult
-        PatternType.INDEX -> output.vfunc[pattern.name] = currentResult
-        PatternType.OFFSET -> output.offset[pattern.name] = currentResult
-    }
+    return PatternResult.Success(currentResult)
 }
