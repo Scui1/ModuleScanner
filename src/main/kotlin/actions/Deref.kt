@@ -27,6 +27,7 @@ object Deref : ExecutableAction {
 
             return currentAddress
         } else {
+            // TODO: Implement multiple derefs and deref relative or absolute
             val relativeVirtualAddress = peFile.readInt(currentOffset)
             val currentVirtualAddressPlus4 = peFile.convertRawOffsetToVirtualOffset(currentOffset + 4)
             return currentVirtualAddressPlus4 + relativeVirtualAddress
