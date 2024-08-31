@@ -14,7 +14,7 @@ object StringSearch : ExecutableAction {
         const val ADD_NULL_TERMINATOR = 2
     }
 
-    override fun execute(peFile: PEFile, currentOffset: Int, arguments: List<String>): Int {
+    override fun execute(peFile: PEFile, currentOffset: Int, arguments: List<String>): ActionResult {
         val string = arguments[Parameters.STRING]
         val wantedOccurrences = if (arguments.size > 1) arguments[Parameters.OCCURRENCE].toIntOrNull()?: 1 else 1
         val addNullTerminator = if (arguments.size > 2) arguments[Parameters.ADD_NULL_TERMINATOR].toBoolean() else false
@@ -40,7 +40,7 @@ object StringSearch : ExecutableAction {
 
         return when (foundAddress) {
             0 -> throw ActionException("No/not enough xrefs in .text section found for string '$string'.")
-            else -> foundAddress
+            else -> ActionResult(foundAddress)
         }
     }
 

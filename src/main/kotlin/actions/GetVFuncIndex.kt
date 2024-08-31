@@ -9,14 +9,14 @@ object GetVFuncIndex : ExecutableAction {
         const val SIZE = 0
     }
 
-    override fun execute(peFile: PEFile, currentOffset: Int, arguments: List<String>): Int {
+    override fun execute(peFile: PEFile, currentOffset: Int, arguments: List<String>): ActionResult {
         val sizeToRead = if (arguments.isNotEmpty()) arguments[Parameters.SIZE].toIntOrNull()?: 4 else 4
 
         val intValue = peFile.readIntWithSize(currentOffset, sizeToRead)
         val vtableEntrySize = peFile.architecture.getVTableEntrySize()
 
         return when {
-            intValue.mod(vtableEntrySize) == 0 -> intValue / vtableEntrySize
+            intValue.mod(vtableEntrySize) == 0 -> ActionResult(intValue / vtableEntrySize)
             else -> throw ActionException("Value '$intValue' is not a vfunc index.") // we assume if the value isn't divideable by 4, the sig is wrong
         }
     }

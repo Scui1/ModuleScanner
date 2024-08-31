@@ -9,9 +9,9 @@ object GetValue : ExecutableAction {
         const val SIZE = 0
     }
 
-    override fun execute(peFile: PEFile, currentOffset: Int, arguments: List<String>): Int {
+    override fun execute(peFile: PEFile, currentOffset: Int, arguments: List<String>): ActionResult {
         val sizeToRead = if (arguments.isNotEmpty()) arguments[Parameters.SIZE].toIntOrNull()?: 4 else 4
 
-        return peFile.readIntWithSize(currentOffset, sizeToRead)
+        return ActionResult(peFile.readIntWithSize(currentOffset, sizeToRead))
     }
 }

@@ -14,7 +14,7 @@ object PatternSearch : ExecutableAction {
         const val MAX_BYTES_TO_SEARCH = 3
     }
 
-    override fun execute(peFile: PEFile, currentOffset: Int, arguments: List<String>): Int {
+    override fun execute(peFile: PEFile, currentOffset: Int, arguments: List<String>): ActionResult {
         val pattern = arguments[Parameters.PATTERN]
         val wantedOccurrences = if (arguments.size > 1) arguments[Parameters.OCCURRENCES].toIntOrNull()?:1 else 1
         val searchDirection = if (arguments.size > 2) arguments[Parameters.SEARCH_DIRECTION] else "DOWN"
@@ -40,7 +40,7 @@ object PatternSearch : ExecutableAction {
 
         return when (foundAddress) {
             0 -> throw ActionException("Couldn't find pattern '$pattern'.")
-            else -> foundAddress
+            else -> ActionResult(foundAddress)
         }
     }
 }

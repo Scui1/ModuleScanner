@@ -7,7 +7,7 @@ object ActionManager {
     private val actions = listOf(PatternSearch, StringSearch, Offset, FollowJmp, GetValue, GetVFuncIndex, Deref)
 
     @kotlin.jvm.Throws(ActionException::class)
-    fun executeAction(action: Action, peFile: PEFile, currentOffset: Int): Int {
+    fun executeAction(action: Action, peFile: PEFile, currentOffset: Int): ActionResult {
         val executableAction = findActionByName(action.type)
             ?: throw ActionException("Action '${action.type}' doesn't exist. Please check your spelling")
 

@@ -9,7 +9,7 @@ object Deref : ExecutableAction {
         const val TIMES_TO_DEREF = 0
     }
 
-    override fun execute(peFile: PEFile, currentOffset: Int, arguments: List<String>): Int {
+    override fun execute(peFile: PEFile, currentOffset: Int, arguments: List<String>): ActionResult {
         val timesToDeref = if (arguments.isNotEmpty()) arguments[Parameters.TIMES_TO_DEREF].toIntOrNull()?: 1 else 1
 
         if (peFile.architecture.is32Bit()) {
@@ -25,12 +25,17 @@ object Deref : ExecutableAction {
                 currentAddress = peFile.convertVirtualOffsetToRawOffset(currentAddress)
             }
 
-            return currentAddress
+            return ActionResult(currentAddress)
         } else {
             // TODO: Implement multiple derefs and deref relative or absolute
             val relativeVirtualAddress = peFile.readInt(currentOffset)
             val currentVirtualAddressPlus4 = peFile.convertRawOffsetToVirtualOffset(currentOffset + 4)
-            return currentVirtualAddressPlus4 + relativeVirtualAddress
+            val targetVirtualAddress = currentVirtualAddressPlus4 + relativeVirtualAddress
+
+            return if (peFile.virtualAddressHasRawAddress(targetVirtualAddress))
+                ActionResult(peFile.convertVirtualOffsetToRawOffset(targetVirtualAddress))
+            else
+                ActionResult(targetVirtualAddress, true)
         }
 
     }

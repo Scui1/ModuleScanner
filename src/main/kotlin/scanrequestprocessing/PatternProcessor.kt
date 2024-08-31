@@ -2,7 +2,7 @@ package scanrequestprocessing
 
 import actions.ActionException
 import actions.ActionManager
-import actions.Deref
+import actions.ActionResult
 import json.PatternType
 import json.scanrequest.Pattern
 import org.slf4j.LoggerFactory
@@ -20,23 +20,29 @@ fun processPattern(pattern: Pattern, peFile: PEFile): PatternResult {
         return PatternResult.Error("No actions are defined.")
     }
 
-    var currentResult = 0
+    var currentResult = ActionResult()
     for (i in pattern.actions.indices) {
         val action = pattern.actions[i]
         try {
-            currentResult = ActionManager.executeAction(action, peFile, currentResult)
+            currentResult = ActionManager.executeAction(action, peFile, currentResult.value)
         } catch (exception: ActionException) {
             return PatternResult.Error("Action ${i + 1} (${action.type}) failed. ${exception.message}")
         }
     }
 
-    // TODO: This is ghetto atm, introduce some custom result type that specifies if result is virtual or raw, so we can get rid of this
-    if ((pattern.type == PatternType.FUNCTION || pattern.type == PatternType.ADDRESS) && pattern.actions.last().type != Deref.name) {
-        currentResult = peFile.convertRawOffsetToVirtualOffset(currentResult)
-        logger.trace("${pattern.type} ${pattern.name} found: 0x${currentResult.toString(16)}")
+    val resultShouldBeVirtualAddress = pattern.type == PatternType.FUNCTION || pattern.type == PatternType.ADDRESS
+    if (resultShouldBeVirtualAddress) {
+        if (!currentResult.isVirtual) {
+            currentResult = ActionResult(peFile.convertRawOffsetToVirtualOffset(currentResult.value))
+        }
+        logResult(pattern, currentResult.value.toString(16))
     } else {
-        logger.trace("${pattern.type} ${pattern.name} found: $currentResult")
+        logResult(pattern, currentResult.value.toString())
     }
 
-    return PatternResult.Success(currentResult)
+    return PatternResult.Success(currentResult.value)
+}
+
+private fun logResult(pattern: Pattern, resultAsString: String) {
+    logger.trace("${pattern.type} ${pattern.name} found: $resultAsString")
 }
