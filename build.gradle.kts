@@ -33,7 +33,7 @@ repositories {
 }
 
 dependencies {
-    implementation("de.scui:kotlin-pefile:1.2")
+    implementation("de.scui:kotlin-pefile:1.2.1")
     implementation("io.ktor:ktor-server-core-jvm:$ktorVersion")
     implementation("io.ktor:ktor-server-cors-jvm:$ktorVersion")
     implementation("io.ktor:ktor-server-cio-jvm:$ktorVersion")
