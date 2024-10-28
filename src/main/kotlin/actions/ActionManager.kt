@@ -4,7 +4,7 @@ import json.scanrequest.Action
 import pefile.PEFile
 
 object ActionManager {
-    private val actions = listOf(PatternSearch, StringSearch, Offset, FollowJmp, GetValue, GetVFuncIndex, Deref)
+    private val actions = listOf(PatternSearch, StringSearch, Offset, FollowJmp, GetExport, GetValue, GetVFuncIndex, Deref)
 
     @kotlin.jvm.Throws(ActionException::class)
     fun executeAction(action: Action, peFile: PEFile, currentOffset: Int): ActionResult {
