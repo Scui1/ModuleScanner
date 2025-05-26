@@ -1,3 +1,6 @@
+import actions.Deref
+import actions.Offset
+import actions.PatternSearch
 import json.PatternType
 import json.scanrequest.Action
 import json.scanrequest.Module
@@ -7,9 +10,7 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import org.junit.jupiter.api.BeforeEach
 import scanrequestprocessing.ModuleReader
-import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets
-import kotlin.system.measureTimeMillis
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -56,6 +57,29 @@ class PatternScanTest {
 
         assertEquals(9091, result.function[X86_MODULE_NAME]?.get(FUNCTION_NAME))
         assertEquals(27024, result.function[X64_MODULE_NAME]?.get(FUNCTION_NAME))
+    }
+
+    @Test
+    fun derefX64Absolute() {
+        val x64Module = Module(
+            X64_MODULE_NAME,
+            listOf(
+                Pattern(
+                    "SomeAddress",
+                    PatternType.ADDRESS,
+                    listOf(
+                        Action(PatternSearch.name, listOf("48 3B 0D 08 DB 02 00")),
+                        Action(Offset.name, listOf("3")),
+                        Action(Deref.name, listOf("1")),
+                        Action(Deref.name, listOf("1", "true"))
+                    )
+                )
+            )
+        )
+
+        val result = processScanRequest(ScanRequest(listOf(x64Module)))
+
+        assertEquals(0x1A3A04, result.address[X64_MODULE_NAME]?.get("SomeAddress"))
     }
 
     @OptIn(ExperimentalTime::class)
