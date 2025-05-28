@@ -10,14 +10,14 @@ object Deref : ExecutableAction {
         const val ABSOLUTE = 1
     }
 
-    override fun execute(peFile: PEFile, currentOffset: Int, arguments: List<String>): ActionResult {
+    override fun execute(peFile: PEFile, currentResult: ActionResult, arguments: List<String>): ActionResult {
         val timesToDeref = if (arguments.isNotEmpty()) arguments[Parameters.TIMES_TO_DEREF].toIntOrNull()?: 1 else 1
         val absoluteAddress = if (arguments.size >= 2) arguments[Parameters.ABSOLUTE].toBoolean() else false
 
         if (peFile.architecture.is32Bit()) {
             val imageBase = peFile.getImageBase()
 
-            var currentAddress = currentOffset
+            var currentAddress = currentResult.value
             for (i in 0 until timesToDeref) {
                 currentAddress = peFile.readInt(currentAddress)
                 if (currentAddress < imageBase) // TODO: do we need a check if the address lies outside of the module?
@@ -31,7 +31,7 @@ object Deref : ExecutableAction {
         } else {
             // TODO: Implement multiple derefs
             if (absoluteAddress) {
-                val targetVirtualAddress = (peFile.readLong(currentOffset) - peFile.getImageBase()).toInt()
+                val targetVirtualAddress = (peFile.readLong(currentResult.value) - peFile.getImageBase()).toInt()
 
                 return if (peFile.virtualAddressHasRawAddress(targetVirtualAddress))
                     ActionResult(peFile.convertVirtualOffsetToRawOffset(targetVirtualAddress))
@@ -39,8 +39,8 @@ object Deref : ExecutableAction {
                     ActionResult(targetVirtualAddress, true)
             } else {
 
-                val relativeVirtualAddress = peFile.readInt(currentOffset)
-                val currentVirtualAddressPlus4 = peFile.convertRawOffsetToVirtualOffset(currentOffset + 4)
+                val relativeVirtualAddress = peFile.readInt(currentResult.value)
+                val currentVirtualAddressPlus4 = peFile.convertRawOffsetToVirtualOffset(currentResult.value + 4)
                 val targetVirtualAddress = currentVirtualAddressPlus4 + relativeVirtualAddress
 
                 return if (peFile.virtualAddressHasRawAddress(targetVirtualAddress))

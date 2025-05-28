@@ -13,7 +13,7 @@ object GetExport : ExecutableAction {
         const val EXPORT_NAME = 0
     }
 
-    override fun execute(peFile: PEFile, currentOffset: Int, arguments: List<String>): ActionResult {
+    override fun execute(peFile: PEFile, currentResult: ActionResult, arguments: List<String>): ActionResult {
         val exportName = if (arguments.isNotEmpty()) arguments[EXPORT_NAME] else throw ActionException("ExportName is missing.")
 
         val exportDirectory = peFile.getDataDirectoryByType(EXPORT_DIRECTORY)

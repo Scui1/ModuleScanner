@@ -24,7 +24,7 @@ fun processPattern(pattern: Pattern, peFile: PEFile): PatternResult {
     for (i in pattern.actions.indices) {
         val action = pattern.actions[i]
         try {
-            currentResult = ActionManager.executeAction(action, peFile, currentResult.value)
+            currentResult = ActionManager.executeAction(action, peFile, currentResult)
         } catch (exception: ActionException) {
             return PatternResult.Error("Action ${i + 1} (${action.type}) failed. ${exception.message}")
         }

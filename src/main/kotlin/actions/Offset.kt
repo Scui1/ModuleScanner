@@ -9,12 +9,12 @@ object Offset : ExecutableAction {
         const val OFFSET = 0
     }
 
-    override fun execute(peFile: PEFile, currentOffset: Int, arguments: List<String>): ActionResult {
+    override fun execute(peFile: PEFile, currentResult: ActionResult, arguments: List<String>): ActionResult {
         val offsetValue = arguments[Parameters.OFFSET].toIntOrNull()
 
         return when(offsetValue) {
             null -> throw ActionException("No offset value was provided.")
-            else -> ActionResult(currentOffset + offsetValue)
+            else -> currentResult.copy(value = currentResult.value + offsetValue)
         }
     }
 }

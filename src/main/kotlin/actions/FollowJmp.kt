@@ -14,15 +14,15 @@ object FollowJmp : ExecutableAction {
         JumpInstruction(0xE9.toUByte(), 4)
     )
 
-    override fun execute(peFile: PEFile, currentOffset: Int, arguments: List<String>): ActionResult {
-        val currentInstruction = peFile.bytes[currentOffset].toUByte()
+    override fun execute(peFile: PEFile, currentResult: ActionResult, arguments: List<String>): ActionResult {
+        val currentInstruction = peFile.bytes[currentResult.value].toUByte()
 
         val jumpInstruction = jmpInstructions.find { it.opCode == currentInstruction }
             ?: throw ActionException("Instruction 0x${currentInstruction.toString(16)} is not a jmp.")
 
-        val relAddress = peFile.readIntWithSize(currentOffset + JMP_OPCODE_SIZE, jumpInstruction.operandSize)
+        val relAddress = peFile.readIntWithSize(currentResult.value + JMP_OPCODE_SIZE, jumpInstruction.operandSize)
 
-        val result = currentOffset + relAddress + JMP_OPCODE_SIZE + jumpInstruction.operandSize
+        val result = currentResult.value + relAddress + JMP_OPCODE_SIZE + jumpInstruction.operandSize
         return when {
             result < peFile.bytes.size && result >= 0 -> ActionResult(result)
             else -> throw ActionException("Jmp redirects outside module bounds. Perhaps it isn't a jmp instruction?")

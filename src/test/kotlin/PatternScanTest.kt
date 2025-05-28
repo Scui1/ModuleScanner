@@ -71,7 +71,8 @@ class PatternScanTest {
                         Action(PatternSearch.name, listOf("48 3B 0D 08 DB 02 00")),
                         Action(Offset.name, listOf("3")),
                         Action(Deref.name, listOf("1")),
-                        Action(Deref.name, listOf("1", "true"))
+                        Action(Deref.name, listOf("1", "true")),
+                        Action(Offset.name, listOf("1"))
                     )
                 )
             )
@@ -79,7 +80,7 @@ class PatternScanTest {
 
         val result = processScanRequest(ScanRequest(listOf(x64Module)))
 
-        assertEquals(0x1A3A04, result.address[X64_MODULE_NAME]?.get("SomeAddress"))
+        assertEquals(0x1A3A05, result.address[X64_MODULE_NAME]?.get("SomeAddress"))
     }
 
     @OptIn(ExperimentalTime::class)
