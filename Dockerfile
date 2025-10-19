@@ -1,4 +1,4 @@
-FROM gradle:jdk17 AS build
+FROM gradle:9.1-jdk21 AS build
 ARG GITHUB_USERNAME
 ARG GITHUB_TOKEN
 COPY --chown=gradle:gradle build.gradle.kts gradle.properties settings.gradle.kts /home/gradle/src/
@@ -7,7 +7,7 @@ COPY src /home/gradle/src/src
 WORKDIR /home/gradle/src
 RUN gradle shadowJar --no-daemon
 
-FROM eclipse-temurin:17-jre
+FROM eclipse-temurin:21-jre
 RUN mkdir -p /app/modules
 COPY --from=build /home/gradle/src/build/libs/modulescanner.jar /app/modulescanner.jar
 EXPOSE 8080:8080
