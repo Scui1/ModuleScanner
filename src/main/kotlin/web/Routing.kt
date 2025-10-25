@@ -1,5 +1,6 @@
 package web
 
+import disassemblerequestprocessing.disassembleScanResult
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -17,6 +18,20 @@ fun Application.configureRouting() {
 
             call.respond(HttpStatusCode.OK, result)
         }
+
+        post("/disassemble") {
+            val config = call.receive<ScanRequest>()
+
+            val scanResult = processScanRequest(config)
+
+            disassembleScanResult(scanResult)
+                .onSuccess { message ->
+                    call.respond(HttpStatusCode.OK, message)
+                }.onFailure { error ->
+                    call.respond(HttpStatusCode.BadRequest, error.message ?: "Unknown message lol")
+                }
+        }
+
         get("/alive") {
             call.respond(HttpStatusCode.OK, true)
         }
